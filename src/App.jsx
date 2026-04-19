@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Flame, Plus, X, Check, Brain, Heart, Phone, User, Home, Activity, ChevronRight, Loader2, Camera, Play, Pause, Trophy } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
 
@@ -298,6 +298,93 @@ function LogModal({ onAdd, onClose }) {
   );
 }
 
+// ─── PULSE CIRCLE ─────────────────────────────────────────────
+function PulseCircle({ onSOS }) {
+  const [bpm, setBpm] = useState(62);
+  const [scale, setScale] = useState(1);
+  const [danger, setDanger] = useState(false);
+  const bpmRef = useRef(62);
+
+  // Simulate slowly varying BPM
+  useEffect(() => {
+    const t = setInterval(() => {
+      const delta = (Math.random() - 0.5) * 4;
+      const next = Math.min(110, Math.max(52, bpmRef.current + delta));
+      bpmRef.current = next;
+      setBpm(Math.round(next));
+      setDanger(next > 90);
+    }, 2000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Heartbeat pulse animation
+  useEffect(() => {
+    const interval = 60000 / bpm;
+    const beat = () => {
+      setScale(1.18);
+      setTimeout(() => setScale(1.06), 100);
+      setTimeout(() => setScale(1.13), 180);
+      setTimeout(() => setScale(1), 320);
+    };
+    beat();
+    const t = setInterval(beat, interval);
+    return () => clearInterval(t);
+  }, [bpm]);
+
+  const color = danger ? C.red : bpm > 75 ? C.orange : C.primary;
+  const size = 160;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
+      <button
+        onClick={onSOS}
+        style={{
+          width: size, height: size,
+          borderRadius: '50%',
+          background: `radial-gradient(circle at 40% 35%, ${color}35, ${color}10)`,
+          border: `2.5px solid ${color}60`,
+          cursor: 'pointer',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          transform: `scale(${scale})`,
+          transition: 'transform 0.1s ease, border-color 1s ease, background 1s ease',
+          boxShadow: `0 0 ${danger ? 40 : 20}px ${color}30`,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Pulse rings */}
+        <div style={{
+          position: 'absolute', inset: -8,
+          borderRadius: '50%',
+          border: `1px solid ${color}25`,
+          animation: 'pulseRing 1.5s ease-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', inset: -20,
+          borderRadius: '50%',
+          border: `1px solid ${color}12`,
+          animation: 'pulseRing 1.5s ease-out infinite 0.4s',
+        }} />
+        {/* Heart icon SVG */}
+        <svg width="38" height="34" viewBox="0 0 38 34" fill="none" style={{ marginBottom: 6 }}>
+          <path d="M19 31C19 31 2 20 2 10C2 5.58 5.58 2 10 2C13.5 2 16.5 4 19 7C21.5 4 24.5 2 28 2C32.42 2 36 5.58 36 10C36 20 19 31 19 31Z" fill={color} fillOpacity="0.85" />
+        </svg>
+        <div style={{ fontSize: 22, fontWeight: 900, color: C.text, lineHeight: 1 }}>{bpm}</div>
+        <div style={{ fontSize: 10, color: C.muted, marginTop: 2, letterSpacing: '0.1em' }}>BPM</div>
+      </button>
+      <div style={{ marginTop: 10, fontSize: 11, color: danger ? C.red : C.muted, fontWeight: danger ? 700 : 400, letterSpacing: '0.1em' }}>
+        {danger ? '⚠️ PULSO ELEVADO · TOCA PARA AYUDA' : 'TOCA SI ESTÁS EN RIESGO'}
+      </div>
+      <style>{`
+        @keyframes pulseRing {
+          0% { transform: scale(1); opacity: 0.6; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ─── PAGE: HOME ───────────────────────────────────────────────
 function PageHome({ workouts, sobrietyDate, setPage, onSOS }) {
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -318,12 +405,8 @@ function PageHome({ workouts, sobrietyDate, setPage, onSOS }) {
         <h1 style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Craving Health</h1>
       </div>
 
-      {/* SOS */}
-      <button onClick={onSOS} style={{ width: '100%', padding: '20px', borderRadius: 20, background: `linear-gradient(135deg, rgba(248,113,113,0.2), rgba(251,146,60,0.1))`, border: `2px solid ${C.red}50`, color: C.text, cursor: 'pointer', marginBottom: 20, textAlign: 'center' }}>
-        <div style={{ fontSize: 32, marginBottom: 6 }}>🆘</div>
-        <div style={{ fontSize: 18, fontWeight: 800 }}>Estoy en riesgo ahora</div>
-        <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>Intervención inmediata · Toca aquí</div>
-      </button>
+      {/* Pulse Circle SOS */}
+      <PulseCircle onSOS={onSOS} />
 
       {/* Abstinencia counter */}
       {sobrietyDays !== null && (
@@ -489,13 +572,14 @@ function PageMeditacion() {
 }
 
 // ─── PAGE: APOYO ──────────────────────────────────────────────
-function PageApoyo({ contacts }) {
-  const telefonos = [
+function PageApoyo({ contacts, helpLines }) {
+  const DEFAULT_TELEFONOS = [
     { nombre: 'Teléfono de la Esperanza', numero: '717 003 717', desc: 'Crisis emocional · 24h', emoji: '🆘' },
     { nombre: 'Alcohólicos Anónimos', numero: '900 200 525', desc: 'Apoyo en adicción al alcohol', emoji: '🤝' },
     { nombre: 'Proyecto Hombre', numero: '914 020 417', desc: 'Drogodependencias', emoji: '🏥' },
     { nombre: 'Emergencias', numero: '112', desc: 'Emergencias generales', emoji: '🚨' },
   ];
+  const telefonos = (helpLines && helpLines.length > 0) ? helpLines : DEFAULT_TELEFONOS;
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
       <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Apoyo</h1>
@@ -553,6 +637,12 @@ function PagePerfil({ workouts, data, save }) {
   const [contacts, setContacts] = useState(data.contacts || [{ name: '', phone: '', role: '' }, { name: '', phone: '', role: '' }]);
   const [anchors, setAnchors] = useState(data.anchors || []);
   const [blackPhotos, setBlackPhotos] = useState(data.blackPhotos || []);
+  const [helpLines, setHelpLines] = useState(data.helpLines || [
+    { nombre: 'Teléfono de la Esperanza', numero: '717 003 717', desc: 'Crisis emocional · 24h', emoji: '🆘' },
+    { nombre: 'Alcohólicos Anónimos', numero: '900 200 525', desc: 'Apoyo en adicción al alcohol', emoji: '🤝' },
+    { nombre: 'Proyecto Hombre', numero: '914 020 417', desc: 'Drogodependencias', emoji: '🏥' },
+    { nombre: 'Emergencias', numero: '112', desc: 'Emergencias generales', emoji: '🚨' },
+  ]);
   const [saved, setSaved] = useState(false);
 
   const sobrietyDays = sobrietyDate ? differenceInDays(new Date(), new Date(sobrietyDate)) : null;
@@ -563,6 +653,7 @@ function PagePerfil({ workouts, data, save }) {
     save('contacts', contacts);
     save('anchors', anchors);
     save('blackPhotos', blackPhotos);
+    save('helpLines', helpLines);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -645,6 +736,25 @@ function PagePerfil({ workouts, data, save }) {
         dark={true}
       />
 
+      {/* Teléfonos de ayuda editables */}
+      <div style={{ marginBottom: 28 }}>
+        <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>TELÉFONOS DE AYUDA</label>
+        <p style={{ fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 12 }}>Edita o añade los teléfonos que aparecen en la sección Apoyo</p>
+        {helpLines.map((t, i) => (
+          <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ fontSize: 12, color: C.muted, fontWeight: 600 }}>Teléfono {i + 1}</span>
+              <button onClick={() => setHelpLines(helpLines.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: C.red, cursor: 'pointer', fontSize: 12 }}>Eliminar</button>
+            </div>
+            <input value={t.nombre} onChange={e => { const next = [...helpLines]; next[i].nombre = e.target.value; setHelpLines(next); }} placeholder="Nombre (ej: Alcohólicos Anónimos)" style={{ width: '100%', marginBottom: 8, padding: '10px 12px', borderRadius: 10, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, outline: 'none' }} />
+            <input value={t.numero} onChange={e => { const next = [...helpLines]; next[i].numero = e.target.value; setHelpLines(next); }} placeholder="Número (ej: 900 200 525)" style={{ width: '100%', marginBottom: 8, padding: '10px 12px', borderRadius: 10, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, outline: 'none' }} />
+            <input value={t.desc} onChange={e => { const next = [...helpLines]; next[i].desc = e.target.value; setHelpLines(next); }} placeholder="Descripción (ej: Crisis emocional · 24h)" style={{ width: '100%', marginBottom: 8, padding: '10px 12px', borderRadius: 10, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, outline: 'none' }} />
+            <input value={t.emoji} onChange={e => { const next = [...helpLines]; next[i].emoji = e.target.value; setHelpLines(next); }} placeholder="Emoji (ej: 🆘)" style={{ width: '80px', padding: '10px 12px', borderRadius: 10, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, outline: 'none' }} />
+          </div>
+        ))}
+        <button onClick={() => setHelpLines([...helpLines, { nombre: '', numero: '', desc: '', emoji: '📞' }])} style={{ width: '100%', padding: '10px 0', borderRadius: 12, background: 'none', border: `1px dashed ${C.border}`, color: C.muted, fontSize: 13, cursor: 'pointer' }}>+ Añadir teléfono</button>
+      </div>
+
       {/* Guardar */}
       <button onClick={saveAll} style={{ width: '100%', padding: '16px 0', borderRadius: 16, background: saved ? `${C.green}30` : `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: saved ? `1px solid ${C.green}` : 'none', color: saved ? C.green : '#fff', fontWeight: 700, fontSize: 16, cursor: 'pointer', transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
         {saved ? <><Check size={20} /> Guardado</> : 'Guardar perfil'}
@@ -670,7 +780,7 @@ export default function App() {
     home: <PageHome workouts={workouts} sobrietyDate={data.sobrietyDate} setPage={setPage} onSOS={() => setShowSOS(true)} />,
     actividad: <PageActividad workouts={workouts} setWorkouts={setWorkouts} />,
     meditacion: <PageMeditacion />,
-    apoyo: <PageApoyo contacts={contacts} />,
+    apoyo: <PageApoyo contacts={contacts} helpLines={data.helpLines} />,
     perfil: <PagePerfil workouts={workouts} data={data} save={save} />,
   };
 
