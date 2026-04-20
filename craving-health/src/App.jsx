@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Flame, Plus, X, Check, Brain, Heart, Phone, User, Home, Activity, ChevronRight, Loader2, Camera, Play, Pause, Trophy, LogOut } from 'lucide-react';
+import { Flame, Plus, X, Check, Brain, Heart, Phone, User, Home, Activity, ChevronRight, Loader2, Camera, Play, Pause, Trophy, LogOut, BookOpen, Star } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
 import { supabase } from './supabase';
 
@@ -86,7 +86,7 @@ function BottomNav({ page, setPage }) {
   const items = [
     { id: 'home', icon: Home, label: 'Inicio' },
     { id: 'actividad', icon: Activity, label: 'Actividad' },
-    { id: 'meditacion', icon: Brain, label: 'Meditar' },
+    { id: 'diario', icon: BookOpen, label: 'Diario' },
     { id: 'apoyo', icon: Heart, label: 'Apoyo' },
     { id: 'perfil', icon: User, label: 'Perfil' },
   ];
@@ -377,7 +377,12 @@ function LogModal({ onAdd, onClose }) {
 }
 
 // ─── PAGE: HOME ───────────────────────────────────────────────
-function PageHome({ workouts, profile, setPage, onSOS }) {
+function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary }) {
+  const [userCount, setUserCount] = useState(null);
+
+  useEffect(() => {
+    supabase.rpc('get_user_count').then(({ data }) => setUserCount(data));
+  }, []);
   const today = format(new Date(), 'yyyy-MM-dd');
   const todayMin = workouts.filter(w => w.date === today).reduce((s, w) => s + w.minutes, 0);
   const streak = (() => {
@@ -385,7 +390,6 @@ function PageHome({ workouts, profile, setPage, onSOS }) {
     while (workouts.some(w => w.date === format(d, 'yyyy-MM-dd'))) { count++; d.setDate(d.getDate() - 1); }
     return count;
   })();
-  const sobrietyDays = profile?.sobriety_date ? differenceInDays(new Date(), new Date(profile.sobriety_date)) : null;
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Buenos días' : hour < 20 ? 'Buenas tardes' : 'Buenas noches';
   return (
@@ -395,7 +399,7 @@ function PageHome({ workouts, profile, setPage, onSOS }) {
         <h1 style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Craving Health</h1>
       </div>
       <PulseCircle onSOS={onSOS} />
-      {sobrietyDays !== null && (
+      {sobrietyDays > 0 && (
         <div style={{ background: `linear-gradient(135deg, ${C.green}20, ${C.cyan}10)`, border: `1px solid ${C.green}40`, borderRadius: 20, padding: '20px 24px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ fontSize: 40 }}>🏆</div>
           <div>
@@ -423,6 +427,22 @@ function PageHome({ workouts, profile, setPage, onSOS }) {
           <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>Días activo</div>
         </div>
       </div>
+      <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} />
+
+      {/* Comunidad */}
+      {userCount !== null && (
+        <div style={{ background: `linear-gradient(135deg, ${C.primary}20, ${C.cyan}10)`, border: `1px solid ${C.primary}30`, borderRadius: 20, padding: '16px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ fontSize: 36 }}>🌍</div>
+          <div>
+            <div style={{ fontSize: 28, fontWeight: 900, color: C.primary, lineHeight: 1 }}>{userCount}</div>
+            <div style={{ fontSize: 13, color: C.muted, marginTop: 2 }}>{userCount === 1 ? 'persona en la comunidad' : 'personas en la comunidad'}</div>
+          </div>
+          <div style={{ marginLeft: 'auto', fontSize: 12, color: C.muted, textAlign: 'right', maxWidth: 100 }}>
+            Nadie lucha solo
+          </div>
+        </div>
+      )}
+
       <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>ACCESO RÁPIDO</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {[
@@ -613,7 +633,7 @@ function PageApoyo({ contacts, helpLines }) {
 }
 
 // ─── PAGE: PERFIL ─────────────────────────────────────────────
-function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout }) {
+function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary }) {
   const [name, setName] = useState(profile?.name || '');
   const [sobrietyDate, setSobrietyDate] = useState(profile?.sobriety_date || '');
   const [myContacts, setMyContacts] = useState(contacts?.length > 0 ? contacts : [{ name: '', phone: '', role: '' }, { name: '', phone: '', role: '' }]);
@@ -627,7 +647,6 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
   const [myBlackPhotos, setMyBlackPhotos] = useState(blackPhotos || []);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const sobrietyDays = sobrietyDate ? differenceInDays(new Date(), new Date(sobrietyDate)) : null;
   const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
   const days = new Set(workouts.map(w => w.date)).size;
 
@@ -661,6 +680,8 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
           </div>
         ))}
       </div>
+
+      <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} />
 
       <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>NOMBRE</label>
       <input value={name} onChange={e => setName(e.target.value)} placeholder="Tu nombre" style={{ ...inputStyle, marginTop: 8 }} />
@@ -714,6 +735,133 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
   );
 }
 
+// ─── PAGE: DIARIO ─────────────────────────────────────────────
+function PageDiario({ diary, onAdd }) {
+  const [mood, setMood] = useState(3);
+  const [text, setText] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const todayEntry = diary.find(d => d.date === today);
+
+  const MOODS = [
+    { v: 1, emoji: '😔', label: 'Muy mal' },
+    { v: 2, emoji: '😟', label: 'Mal' },
+    { v: 3, emoji: '😐', label: 'Regular' },
+    { v: 4, emoji: '🙂', label: 'Bien' },
+    { v: 5, emoji: '😊', label: 'Muy bien' },
+  ];
+
+  const submit = async () => {
+    setSaving(true);
+    await onAdd({ date: today, mood, text });
+    setSaving(false);
+    setSaved(true);
+    setText('');
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
+      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Diario</h1>
+      <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>¿Cómo estás hoy? Escríbelo.</p>
+
+      {/* Today entry */}
+      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 20, padding: 20, marginBottom: 20 }}>
+        <div style={{ fontSize: 13, color: C.muted, fontWeight: 600, marginBottom: 16 }}>HOY — {format(new Date(), 'dd/MM/yyyy')}</div>
+
+        {/* Mood selector */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 12, color: C.muted, marginBottom: 10 }}>¿Cómo te sientes?</div>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
+            {MOODS.map(m => (
+              <button key={m.v} onClick={() => setMood(m.v)} style={{ flex: 1, padding: '10px 0', borderRadius: 12, border: `1px solid ${mood === m.v ? C.primary : C.border}`, background: mood === m.v ? `${C.primary}20` : 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                <span style={{ fontSize: 22 }}>{m.emoji}</span>
+                <span style={{ fontSize: 9, color: mood === m.v ? C.primary : C.muted, fontWeight: 600 }}>{m.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Text */}
+        <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Escribe cómo te sientes, qué ha pasado hoy, qué te preocupa..." rows={4} style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 14, outline: 'none', resize: 'none', fontFamily: 'inherit', marginBottom: 12 }} />
+
+        <button onClick={submit} disabled={saving} style={{ width: '100%', padding: '13px 0', borderRadius: 14, background: saved ? `${C.green}30` : `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: saved ? `1px solid ${C.green}` : 'none', color: saved ? C.green : '#fff', fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          {saving ? <Loader2 size={18} /> : saved ? <><Check size={18} /> Guardado</> : 'Guardar entrada'}
+        </button>
+      </div>
+
+      {/* Past entries */}
+      {diary.filter(d => d.date !== today).length > 0 && (
+        <>
+          <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>ENTRADAS ANTERIORES</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {diary.filter(d => d.date !== today).slice(0, 10).map((d, i) => (
+              <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: d.text ? 8 : 0 }}>
+                  <span style={{ fontSize: 12, color: C.muted }}>{format(new Date(d.date), 'dd/MM/yyyy')}</span>
+                  <span style={{ fontSize: 22 }}>{MOODS.find(m => m.v === d.mood)?.emoji || '😐'}</span>
+                </div>
+                {d.text && <p style={{ fontSize: 13, color: C.text, lineHeight: 1.5 }}>{d.text}</p>}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Meditación shortcut */}
+      <button onClick={() => {}} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
+        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${C.cyan}15`, border: `1px solid ${C.cyan}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🧘</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Meditación matinal</div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>5 minutos para empezar bien el día</div>
+        </div>
+        <ChevronRight size={16} color={C.muted} />
+      </button>
+    </div>
+  );
+}
+
+// ─── ACHIEVEMENTS ─────────────────────────────────────────────
+function Achievements({ sobrietyDays, workouts, diary }) {
+  const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
+  const workoutDays = new Set(workouts.map(w => w.date)).size;
+
+  const badges = [
+    { id: 1, emoji: '🌱', title: 'Primer día', desc: '1 día en abstinencia', unlocked: sobrietyDays >= 1 },
+    { id: 2, emoji: '🔥', title: 'Una semana', desc: '7 días en abstinencia', unlocked: sobrietyDays >= 7 },
+    { id: 3, emoji: '💪', title: 'Un mes', desc: '30 días en abstinencia', unlocked: sobrietyDays >= 30 },
+    { id: 4, emoji: '🏆', title: 'Tres meses', desc: '90 días en abstinencia', unlocked: sobrietyDays >= 90 },
+    { id: 5, emoji: '👑', title: 'Medio año', desc: '180 días en abstinencia', unlocked: sobrietyDays >= 180 },
+    { id: 6, emoji: '🎯', title: 'Un año', desc: '365 días en abstinencia', unlocked: sobrietyDays >= 365 },
+    { id: 7, emoji: '🏃', title: 'En movimiento', desc: 'Primera sesión de ejercicio', unlocked: workoutDays >= 1 },
+    { id: 8, emoji: '⚡', title: 'Constante', desc: '7 días de ejercicio', unlocked: workoutDays >= 7 },
+    { id: 9, emoji: '🧘', title: 'Mente sana', desc: '10 horas de ejercicio total', unlocked: totalMin >= 600 },
+    { id: 10, emoji: '📖', title: 'Primer diario', desc: 'Primera entrada en el diario', unlocked: diary.length >= 1 },
+    { id: 11, emoji: '✍️', title: 'Escritor', desc: '7 entradas en el diario', unlocked: diary.length >= 7 },
+    { id: 12, emoji: '💙', title: 'Comprometido', desc: '30 entradas en el diario', unlocked: diary.length >= 30 },
+  ];
+
+  const unlocked = badges.filter(b => b.unlocked);
+
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>LOGROS</div>
+        <div style={{ fontSize: 12, color: C.primary, fontWeight: 600 }}>{unlocked.length}/{badges.length}</div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+        {badges.map(b => (
+          <div key={b.id} style={{ background: b.unlocked ? `${C.primary}15` : C.card, border: `1px solid ${b.unlocked ? C.primary + '40' : C.border}`, borderRadius: 14, padding: '12px 8px', textAlign: 'center', opacity: b.unlocked ? 1 : 0.4 }}>
+            <div style={{ fontSize: 24, marginBottom: 4, filter: b.unlocked ? 'none' : 'grayscale(1)' }}>{b.emoji}</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: b.unlocked ? C.text : C.muted, lineHeight: 1.2 }}>{b.title}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── APP ROOT ─────────────────────────────────────────────────
 export default function App() {
   const [user, setUser] = useState(null);
@@ -726,6 +874,7 @@ export default function App() {
   const [helpLines, setHelpLines] = useState([]);
   const [anchors, setAnchors] = useState([]);
   const [blackPhotos, setBlackPhotos] = useState([]);
+  const [diary, setDiary] = useState([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -744,16 +893,18 @@ export default function App() {
 
   const loadData = async () => {
     const uid = user.id;
-    const [{ data: prof }, { data: w }, { data: c }, { data: h }] = await Promise.all([
+    const [{ data: prof }, { data: w }, { data: c }, { data: h }, { data: d }] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', uid).single(),
       supabase.from('workouts').select('*').eq('user_id', uid).order('date', { ascending: false }),
       supabase.from('contacts').select('*').eq('user_id', uid),
       supabase.from('help_lines').select('*').eq('user_id', uid),
+      supabase.from('diary').select('*').eq('user_id', uid).order('date', { ascending: false }),
     ]);
     if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); }
     if (w) setWorkouts(w);
     if (c) setContacts(c);
     if (h) setHelpLines(h);
+    if (d) setDiary(d);
   };
 
   const addWorkout = async (data) => {
@@ -776,6 +927,13 @@ export default function App() {
     setBlackPhotos(b);
   };
 
+  const addDiary = async (data) => {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    await supabase.from('diary').delete().eq('user_id', user.id).eq('date', today);
+    const { data: d } = await supabase.from('diary').insert({ ...data, user_id: user.id }).select().single();
+    if (d) setDiary(prev => [d, ...prev.filter(x => x.date !== today)]);
+  };
+
   const logout = async () => { await supabase.auth.signOut(); setUser(null); };
 
   if (loading) return (
@@ -791,12 +949,14 @@ export default function App() {
 
   if (!user) return <AuthPage onAuth={u => { setUser(u); }} />;
 
+  const sobrietyDays = profile?.sobriety_date ? differenceInDays(new Date(), new Date(profile.sobriety_date)) : 0;
+
   const pages = {
-    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} />,
+    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} />,
-    meditacion: <PageMeditacion />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
-    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} />,
+    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} />,
   };
 
   return (
