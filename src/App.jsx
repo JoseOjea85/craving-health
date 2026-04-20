@@ -86,8 +86,8 @@ function BottomNav({ page, setPage }) {
   const items = [
     { id: 'home', icon: Home, label: 'Inicio' },
     { id: 'actividad', icon: Activity, label: 'Actividad' },
+    { id: 'meditacion', icon: Brain, label: 'Meditar' },
     { id: 'diario', icon: BookOpen, label: 'Diario' },
-    { id: 'apoyo', icon: Heart, label: 'Apoyo' },
     { id: 'perfil', icon: User, label: 'Perfil' },
   ];
   return (
@@ -524,6 +524,7 @@ function PageMeditacion() {
   const [active, setActive] = useState(null);
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
+
   useEffect(() => {
     if (!running) return;
     const t = setInterval(() => setSeconds(s => s + 1), 1000);
@@ -736,7 +737,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 }
 
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
-function PageDiario({ diary, onAdd }) {
+function PageDiario({ diary, onAdd, setPage }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -810,7 +811,7 @@ function PageDiario({ diary, onAdd }) {
       )}
 
       {/* Meditación shortcut */}
-      <button onClick={() => {}} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
+      <button onClick={() => setPage('meditacion')} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
         <div style={{ width: 44, height: 44, borderRadius: 12, background: `${C.cyan}15`, border: `1px solid ${C.cyan}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🧘</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Meditación matinal</div>
@@ -954,7 +955,8 @@ export default function App() {
   const pages = {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} />,
-    diario: <PageDiario diary={diary} onAdd={addDiary} />,
+    meditacion: <PageMeditacion />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} />,
   };
