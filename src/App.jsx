@@ -969,7 +969,7 @@ function PageDiario({ diary, onAdd }) {
       )}
 
       {/* Meditación shortcut */}
-      <button onClick={() => {}} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
+      <button onClick={() => setPage("meditacion")} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
         <div style={{ width: 44, height: 44, borderRadius: 12, background: `${C.cyan}15`, border: `1px solid ${C.cyan}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🧘</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Meditación matinal</div>
