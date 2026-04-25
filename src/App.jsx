@@ -1117,7 +1117,7 @@ export default function App() {
       supabase.from('diary').select('*').eq('user_id', uid).order('date', { ascending: false }),
       supabase.from('cravings').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
     ]);
-    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); }
+    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); } else { await supabase.from('profiles').upsert({ id: uid, name: '', anchors: '[]', black_photos: '[]', playlist: '[]' }); setProfile({}); setAnchors([]); setBlackPhotos([]); }
     if (w) setWorkouts(w);
     if (c) setContacts(c);
     if (h) setHelpLines(h);
