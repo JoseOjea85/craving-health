@@ -539,8 +539,85 @@ function BreathingCircle({ running }) {
     </div>
   );
 }
+function CircularProgress({ seconds, totalSeconds }) {
+  const size = 140, r = 60, circ = 2 * Math.PI * r;
+  const progress = Math.min(seconds / totalSeconds, 1);
+  return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
+      <svg width={size} height={size}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e1e30" strokeWidth={8} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#22d3ee" strokeWidth={8}
+          strokeDasharray={circ} strokeDashoffset={circ * (1 - progress)}
+          strokeLinecap="round" transform={"rotate(-90 " + size/2 + " " + size/2 + ")"}
+          style={{ transition:"stroke-dashoffset 1s linear" }} />
+        <text x={size/2} y={size/2 + 6} textAnchor="middle" fill="#22d3ee" fontSize="18" fontWeight="800">
+          {Math.round(progress * 100)}%
+        </text>
+      </svg>
+    </div>
+  );
+}
+function MandalaGraphic({ running }) {
+  const [rotation, setRotation] = useState(0);
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setRotation(r => r + 1), 50);
+    return () => clearInterval(t);
+  }, [running]);
+  const angles = [0,45,90,135,180,225,270,315];
+  return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
+      <svg width={140} height={140} style={{ transform:"rotate(" + rotation + "deg)" }}>
+        {angles.map((angle, i) => (
+          <g key={i} transform={"rotate(" + angle + " 70 70)"}>
+            <ellipse cx={70} cy={35} rx={8} ry={20} fill={i % 2 === 0 ? "#7c5cfc80" : "#22d3ee40"} />
+          </g>
+        ))}
+        <circle cx={70} cy={70} r={20} fill="#22d3ee30" stroke="#22d3ee" strokeWidth={2} />
+        <circle cx={70} cy={70} r={8} fill="#7c5cfc" />
+      </svg>
+    </div>
+  );
+}
+function WavesGraphic({ running }) {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setTick(t => t + 1), 100);
+    return () => clearInterval(t);
+  }, [running]);
+  return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
+      <div style={{ position:"relative", width:140, height:140 }}>
+        {[0,1,2,3].map(i => (
+          <div key={i} style={{ position:"absolute", inset:i*18, borderRadius:"50%", border:"2px solid #4ade80", opacity:Math.max(0, 1-((tick*0.05+i*0.25)%1)), transition:"opacity 0.1s" }} />
+        ))}
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32 }}>🌱</div>
+      </div>
+    </div>
+  );
+}
+function HeartbeatGraphic({ running }) {
+  const [beat, setBeat] = useState(false);
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => { setBeat(true); setTimeout(() => setBeat(false), 200); }, 800);
+    return () => clearInterval(t);
+  }, [running]);
+  return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
+      <div style={{ transform:"scale(" + (beat ? 1.3 : 1) + ")", transition:"transform 0.15s ease", fontSize:80, filter:"drop-shadow(0 0 " + (beat ? 20 : 8) + "px #f87171)" }}>💪</div>
+    </div>
+  );
+}
 function MeditationGraphic({ sessionId, seconds, running }) {
-  return <BreathingCircle running={running} />;
+  const totalSeconds = [300, 600, 420, 180, 300][sessionId - 1] || 300;
+  if (sessionId === 1) return <BreathingCircle running={running} />;
+  if (sessionId === 2) return <CircularProgress seconds={seconds} totalSeconds={totalSeconds} />;
+  if (sessionId === 3) return <MandalaGraphic running={running} />;
+  if (sessionId === 4) return <WavesGraphic running={running} />;
+  if (sessionId === 5) return <HeartbeatGraphic running={running} />;
+  return null;
 }
 function PageMeditacion() {
   const [active, setActive] = useState(null);
