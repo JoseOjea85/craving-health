@@ -520,6 +520,28 @@ function PageActividad({ workouts, onAdd }) {
 }
 
 // ─── PAGE: MEDITACIÓN ─────────────────────────────────────────
+
+function BreathingCircle({ running }) {
+  const [phase, setPhase] = useState(0);
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setPhase(p => (p + 1) % 3), 2000);
+    return () => clearInterval(t);
+  }, [running]);
+  const sizes = [80, 120, 100];
+  const labels = ["Inhala", "Reten", "Exhala"];
+  const size = sizes[phase];
+  return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
+      <div style={{ width:size, height:size, borderRadius:"50%", background:"radial-gradient(circle, #7c5cfc40, #22d3ee20)", border:"2px solid #7c5cfc60", transition:"all 1.8s ease-in-out", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 30px #7c5cfc30" }}>
+        <span style={{ fontSize:12, color:"#7c5cfc", fontWeight:600 }}>{labels[phase]}</span>
+      </div>
+    </div>
+  );
+}
+function MeditationGraphic({ sessionId, seconds, running }) {
+  return <BreathingCircle running={running} />;
+}
 function PageMeditacion() {
   const [active, setActive] = useState(null);
   const [seconds, setSeconds] = useState(0);
@@ -546,6 +568,7 @@ function PageMeditacion() {
           <div style={{ fontSize: 48, marginBottom: 12 }}>{active.emoji}</div>
           <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{active.title}</h2>
           <p style={{ fontSize: 13, color: C.muted, marginBottom: 24 }}>{active.desc}</p>
+          <MeditationGraphic sessionId={active.id} seconds={seconds} running={running} />
           <div style={{ fontSize: 52, fontWeight: 800, color: C.primary, marginBottom: 8 }}>{fmt(seconds)}</div>
           <p style={{ color: C.muted, fontSize: 12, marginBottom: 24 }}>Respira. Estás en el lugar correcto.</p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
