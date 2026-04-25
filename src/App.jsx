@@ -804,6 +804,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
   ]);
   const [myAnchors, setMyAnchors] = useState(anchors || []);
   const [myBlackPhotos, setMyBlackPhotos] = useState(blackPhotos || []);
+  const [myPlaylist, setMyPlaylist] = useState(profile?.playlist || [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror - Michael Jackson', url:'https://www.youtube.com/watch?v=PmklOekNjA4' }]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
@@ -811,7 +812,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 
   const saveAll = async () => {
     setSaving(true);
-    await onSave({ name, sobrietyDate, contacts: myContacts, helpLines: myHelpLines, anchors: myAnchors, blackPhotos: myBlackPhotos });
+    await onSave({ name, sobrietyDate, contacts: myContacts, helpLines: myHelpLines, anchors: myAnchors, blackPhotos: myBlackPhotos, playlist: myPlaylist });
     setSaving(false); setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -884,6 +885,20 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
         <button onClick={() => setMyHelpLines([...myHelpLines, { nombre: '', numero: '', descripcion: '', emoji: '📞' }])} style={{ width: '100%', padding: '10px 0', borderRadius: 12, background: 'none', border: `1px dashed ${C.border}`, color: C.muted, fontSize: 13, cursor: 'pointer' }}>+ Añadir teléfono</button>
       </div>
 
+      
+      <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>MI PLAYLIST ANTICRAVING</label>
+      <p style={{ fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 12 }}>Añade links de YouTube que te ayuden a no consumir</p>
+      <div style={{ marginBottom: 20 }}>
+        {myPlaylist.map((p, i) => (
+          <div key={i} style={{ display:'flex', gap:8, marginBottom:8 }}>
+            <input value={p.title} onChange={e => { const n=[...myPlaylist]; n[i].title=e.target.value; setMyPlaylist(n); }} placeholder="Nombre de la canción" style={{ flex:1, padding:'10px 12px', borderRadius:10, background:C.bg, border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:'none' }} />
+            <input value={p.url} onChange={e => { const n=[...myPlaylist]; n[i].url=e.target.value; setMyPlaylist(n); }} placeholder="Link de YouTube" style={{ flex:2, padding:'10px 12px', borderRadius:10, background:C.bg, border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:'none' }} />
+            <button onClick={() => setMyPlaylist(myPlaylist.filter((_,idx)=>idx!==i))} style={{ padding:'10px 12px', borderRadius:10, background:'none', border:`1px solid ${C.border}`, color:C.red, cursor:'pointer', fontSize:12 }}>✕</button>
+          </div>
+        ))}
+        <button onClick={() => setMyPlaylist([...myPlaylist, { title:'', url:'' }])} style={{ width:'100%', padding:'10px 0', borderRadius:12, background:'none', border:`1px dashed ${C.border}`, color:C.muted, fontSize:13, cursor:'pointer' }}>+ Añadir canción</button>
+      </div>
+
       <PhotoUploader photos={myAnchors} onAdd={p => setMyAnchors([...myAnchors, p])} onRemove={i => setMyAnchors(myAnchors.filter((_, idx) => idx !== i))} title="💙 Anclaje emocional" desc="Fotos de tus motivos para seguir" dark={false} />
       <PhotoUploader photos={myBlackPhotos} onAdd={p => setMyBlackPhotos([...myBlackPhotos, p])} onRemove={i => setMyBlackPhotos(myBlackPhotos.filter((_, idx) => idx !== i))} title="🖤 Foto negra" desc="Imágenes que te recuerdan el daño" dark={true} />
 
@@ -928,7 +943,7 @@ function NatureSounds() {
   );
 }
 
-function PageDiario({ diary, onAdd, setPage }) {
+function PageDiario({ diary, onAdd, setPage, playlist }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -1004,20 +1019,15 @@ function PageDiario({ diary, onAdd, setPage }) {
       
       <div style={{ marginTop:20 }}>
         <div style={{ color:'#6b6b8a', fontSize:11, letterSpacing:'0.2em', fontWeight:600, marginBottom:12 }}>SONIDOS</div>
-        <a href="https://www.youtube.com/watch?v=PivWY9wn5ps" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:10, textDecoration:'none' }}>
-          <div style={{ width:44, height:44, borderRadius:12, background:'#ff000020', border:'1px solid #ff000040', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>▶️</div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>Playlist anticraving</div>
-            <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Abrir en YouTube</div>
-          </div>
-        </a>
-        <a href="https://www.youtube.com/watch?v=PmklOekNjA4" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:10, textDecoration:'none' }}>
-          <div style={{ width:44, height:44, borderRadius:12, background:'#ffffff10', border:'1px solid #ffffff20', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🎵</div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>Man in the Mirror</div>
-            <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Michael Jackson</div>
-          </div>
-        </a>
+        {(playlist && playlist.length > 0 ? playlist : [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror', url:'https://www.youtube.com/watch?v=PmklOekNjA4' }]).map((p, i) => (
+          <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:10, textDecoration:'none' }}>
+            <div style={{ width:44, height:44, borderRadius:12, background:'#ff000020', border:'1px solid #ff000040', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🎵</div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>{p.title}</div>
+              <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Abrir en YouTube</div>
+            </div>
+          </a>
+        ))}
         <NatureSounds />
       </div>
 
@@ -1130,8 +1140,8 @@ export default function App() {
     if (w) setWorkouts(prev => [w, ...prev]);
   };
 
-  const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b }) => {
-    await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b) });
+  const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b, playlist: pl }) => {
+    await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b), playlist: JSON.stringify(pl) });
     await supabase.from('contacts').delete().eq('user_id', user.id);
     const validContacts = c.filter(x => x.name || x.phone);
     if (validContacts.length > 0) await supabase.from('contacts').insert(validContacts.map(x => ({ ...x, user_id: user.id })));
@@ -1177,7 +1187,7 @@ export default function App() {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} onCraving={() => setShowCraving(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} cravings={cravings} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} />,
     meditacion: <PageMeditacion />,
-    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} playlist={profile?.playlist ? JSON.parse(profile.playlist) : []} />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} />,
   };
