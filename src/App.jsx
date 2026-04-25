@@ -1017,7 +1017,7 @@ function PageDiario({ diary, onAdd, setPage, playlist }) {
             </div>
           </a>
         ))}
-        <NatureSounds playlist={playlist} />
+        
       </div>
 
       {/* Meditación shortcut */}
