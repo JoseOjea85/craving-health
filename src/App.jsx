@@ -911,25 +911,109 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
 
+
 function NatureSounds() {
   const [playing, setPlaying] = useState(null);
-  const audioRef = useRef(null);
+  const nodesRef = useRef({});
+
+  const createRain = (ctx) => {
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1000;
+    source.connect(filter);
+    filter.connect(ctx.destination);
+    source.start();
+    return source;
+  };
+
+  const createOcean = (ctx) => {
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const wave = Math.sin(i / ctx.sampleRate * 0.3) * 0.5 + 0.5;
+      data[i] = (Math.random() * 2 - 1) * wave * 0.4;
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 500;
+    source.connect(filter);
+    filter.connect(ctx.destination);
+    source.start();
+    return source;
+  };
+
+  const createForest = (ctx) => {
+    const osc = ctx.createOscillator();
+    osc.frequency.value = 800;
+    osc.type = 'sine';
+    const gain = ctx.createGain();
+    gain.gain.value = 0.05;
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.1;
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    noise.connect(ctx.destination);
+    osc.start();
+    noise.start();
+    return { stop: () => { osc.stop(); noise.stop(); } };
+  };
+
+  const createWind = (ctx) => {
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.2;
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 200;
+    source.connect(filter);
+    filter.connect(ctx.destination);
+    source.start();
+    return source;
+  };
+
   const sounds = [
-    { id: 'rain', emoji: '🌧️', label: 'Lluvia', url: 'https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3' },
-    { id: 'ocean', emoji: '🌊', label: 'Olas', url: 'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-loop-1196.mp3' },
-    { id: 'forest', emoji: '🌲', label: 'Bosque', url: 'https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1210.mp3' },
-    { id: 'wind', emoji: '🌬️', label: 'Viento', url: 'https://assets.mixkit.co/sfx/preview/mixkit-wind-and-trees-loop-1184.mp3' },
+    { id: 'rain', emoji: '🌧️', label: 'Lluvia', create: createRain },
+    { id: 'ocean', emoji: '🌊', label: 'Olas', create: createOcean },
+    { id: 'forest', emoji: '🌲', label: 'Bosque', create: createForest },
+    { id: 'wind', emoji: '🌬️', label: 'Viento', create: createWind },
   ];
+
   const toggle = (s) => {
-    if (playing === s.id) { audioRef.current.pause(); setPlaying(null); }
-    else {
-      if (audioRef.current) audioRef.current.pause();
-      audioRef.current = new Audio(s.url);
-      audioRef.current.loop = true;
-      audioRef.current.play().catch(() => {});
+    if (playing === s.id) {
+      const node = nodesRef.current[s.id];
+      if (node) { try { node.stop ? node.stop() : node.stop(); } catch(e) {} }
+      if (nodesRef.current.ctx) { nodesRef.current.ctx.close(); }
+      nodesRef.current = {};
+      setPlaying(null);
+    } else {
+      if (playing && nodesRef.current[playing]) {
+        try { nodesRef.current[playing].stop(); } catch(e) {}
+        if (nodesRef.current.ctx) nodesRef.current.ctx.close();
+        nodesRef.current = {};
+      }
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const node = s.create(ctx);
+      nodesRef.current = { [s.id]: node, ctx };
       setPlaying(s.id);
     }
   };
+
   return (
     <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:10 }}>
       {sounds.map(s => (
@@ -942,6 +1026,7 @@ function NatureSounds() {
     </div>
   );
 }
+
 
 function PageDiario({ diary, onAdd, setPage, playlist }) {
   const [mood, setMood] = useState(3);
