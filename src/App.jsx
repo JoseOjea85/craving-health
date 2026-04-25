@@ -912,118 +912,51 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
 
 
+
 function NatureSounds() {
-  const [playing, setPlaying] = useState(null);
-  const nodesRef = useRef({});
+  const [playing, setPlaying] = useState(false);
+  const ctxRef = useRef(null);
+  const nodesRef = useRef([]);
 
-  const createRain = (ctx) => {
-    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 1000;
-    source.connect(filter);
-    filter.connect(ctx.destination);
-    source.start();
-    return source;
+  const start = () => {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    ctxRef.current = ctx;
+    const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88];
+    const playNote = () => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = notes[Math.floor(Math.random() * notes.length)];
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.5);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 3);
+      nodesRef.current.push(osc);
+    };
+    playNote();
+    const interval = setInterval(playNote, 2500);
+    nodesRef.current.push({ stop: () => clearInterval(interval) });
+    setPlaying(true);
   };
 
-  const createOcean = (ctx) => {
-    const buffer = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) {
-      const wave = Math.sin(i / ctx.sampleRate * 0.3) * 0.5 + 0.5;
-      data[i] = (Math.random() * 2 - 1) * wave * 0.4;
-    }
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 500;
-    source.connect(filter);
-    filter.connect(ctx.destination);
-    source.start();
-    return source;
-  };
-
-  const createForest = (ctx) => {
-    const osc = ctx.createOscillator();
-    osc.frequency.value = 800;
-    osc.type = 'sine';
-    const gain = ctx.createGain();
-    gain.gain.value = 0.05;
-    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.1;
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
-    noise.loop = true;
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    noise.connect(ctx.destination);
-    osc.start();
-    noise.start();
-    return { stop: () => { osc.stop(); noise.stop(); } };
-  };
-
-  const createWind = (ctx) => {
-    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.2;
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 200;
-    source.connect(filter);
-    filter.connect(ctx.destination);
-    source.start();
-    return source;
-  };
-
-  const sounds = [
-    { id: 'rain', emoji: '🌧️', label: 'Lluvia', create: createRain },
-    { id: 'ocean', emoji: '🌊', label: 'Olas', create: createOcean },
-    { id: 'forest', emoji: '🌲', label: 'Bosque', create: createForest },
-    { id: 'wind', emoji: '🌬️', label: 'Viento', create: createWind },
-  ];
-
-  const toggle = (s) => {
-    if (playing === s.id) {
-      const node = nodesRef.current[s.id];
-      if (node) { try { node.stop ? node.stop() : node.stop(); } catch(e) {} }
-      if (nodesRef.current.ctx) { nodesRef.current.ctx.close(); }
-      nodesRef.current = {};
-      setPlaying(null);
-    } else {
-      if (playing && nodesRef.current[playing]) {
-        try { nodesRef.current[playing].stop(); } catch(e) {}
-        if (nodesRef.current.ctx) nodesRef.current.ctx.close();
-        nodesRef.current = {};
-      }
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const node = s.create(ctx);
-      nodesRef.current = { [s.id]: node, ctx };
-      setPlaying(s.id);
-    }
+  const stop = () => {
+    nodesRef.current.forEach(n => { try { n.stop(); } catch(e) {} });
+    nodesRef.current = [];
+    if (ctxRef.current) { ctxRef.current.close(); ctxRef.current = null; }
+    setPlaying(false);
   };
 
   return (
-    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:10 }}>
-      {sounds.map(s => (
-        <button key={s.id} onClick={() => toggle(s)} style={{ padding:'14px 12px', borderRadius:14, border:`1px solid ${playing===s.id?'#7c5cfc':'#1e1e30'}`, background:playing===s.id?'#7c5cfc20':'#13131f', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
-          <span style={{ fontSize:28 }}>{s.emoji}</span>
-          <span style={{ fontSize:12, fontWeight:600, color:playing===s.id?'#7c5cfc':'#6b6b8a' }}>{s.label}</span>
-          <span style={{ fontSize:10, color:playing===s.id?'#7c5cfc':'#6b6b8a' }}>{playing===s.id?'⏸ Pausar':'▶ Escuchar'}</span>
-        </button>
-      ))}
-    </div>
+    <button onClick={playing ? stop : start} style={{ width:'100%', padding:'16px', borderRadius:14, border:`1px solid ${playing?'#7c5cfc':'#1e1e30'}`, background:playing?'#7c5cfc20':'#13131f', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, marginTop:10 }}>
+      <span style={{ fontSize:28 }}>{playing ? '⏸' : '🎵'}</span>
+      <div style={{ textAlign:'left' }}>
+        <div style={{ fontSize:14, fontWeight:600, color:playing?'#7c5cfc':'#f0f0ff' }}>{playing ? 'Pausar música' : 'Música calmada'}</div>
+        <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Notas suaves para calmar el craving</div>
+      </div>
+    </button>
   );
 }
 
