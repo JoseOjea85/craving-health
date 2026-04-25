@@ -1133,7 +1133,7 @@ export default function App() {
   };
 
   const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b, playlist: pl }) => {
-    await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b), playlist: JSON.stringify(pl) });
+    const { error } = await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b), playlist: JSON.stringify(pl) }); if (error) console.error('Error guardando:', error);
     await supabase.from('contacts').delete().eq('user_id', user.id);
     const validContacts = c.filter(x => x.name || x.phone);
     if (validContacts.length > 0) await supabase.from('contacts').insert(validContacts.map(x => ({ ...x, user_id: user.id })));
