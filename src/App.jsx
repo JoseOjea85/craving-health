@@ -956,6 +956,7 @@ export default function App() {
   const pages = {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} />,
+    meditacion: <PageMeditacion />,
     diario: <PageDiario diary={diary} onAdd={addDiary} />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} />,
