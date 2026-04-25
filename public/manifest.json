@@ -1,0 +1,16 @@
+{
+  "name": "Craving Health",
+  "short_name": "Craving Health",
+  "description": "Tu compañero en la recuperación",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0d14",
+  "theme_color": "#7c5cfc",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
