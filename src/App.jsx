@@ -355,11 +355,11 @@ function WeekChart({ workouts, goal }) {
   const max = Math.max(goal * 1.5, ...days.map(d => d.minutes), 1);
   return (
     <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 20, padding: '12px 16px', marginBottom: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
         <span style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>ESTA SEMANA</span>
         <span style={{ color: C.muted, fontSize: 11 }}>Meta: {goal} min/día</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 50 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 44, marginTop: 8 }}>
         {days.map((d) => {
           const height = Math.round((d.minutes / max) * 50);
           const isToday = d.key === format(new Date(), 'yyyy-MM-dd');
