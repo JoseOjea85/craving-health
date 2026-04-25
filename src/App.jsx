@@ -895,7 +895,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 }
 
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
-function PageDiario({ diary, onAdd }) {
+function PageDiario({ diary, onAdd, setPage }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -1124,7 +1124,7 @@ export default function App() {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} onCraving={() => setShowCraving(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} cravings={cravings} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} />,
     meditacion: <PageMeditacion />,
-    diario: <PageDiario diary={diary} onAdd={addDiary} />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} />,
   };
