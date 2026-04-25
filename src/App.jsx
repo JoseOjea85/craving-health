@@ -11,7 +11,7 @@ const C = {
 
 
 const MANTRAS = [
-  "Algún día contarás la historia de cómo saliste adelante.",
+  "Algún día contarás la historia de cómo saliste adelante y serás la guía de superación para otra persona.",
   "Un día a la vez. Hoy es suficiente.",
   "Eres más fuerte que el impulso que sientes ahora.",
   "La recuperación no es una línea recta. Sigue.",
