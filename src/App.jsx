@@ -359,7 +359,7 @@ function WeekChart({ workouts, goal }) {
         <span style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>ESTA SEMANA</span>
         <span style={{ color: C.muted, fontSize: 11 }}>Meta: {goal} min/día</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 80 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 60 }}>
         {days.map((d) => {
           const height = Math.round((d.minutes / max) * 80);
           const isToday = d.key === format(new Date(), 'yyyy-MM-dd');
