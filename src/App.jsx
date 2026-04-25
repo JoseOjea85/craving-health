@@ -895,6 +895,39 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 }
 
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
+
+function NatureSounds() {
+  const [playing, setPlaying] = React.useState(null);
+  const audioRef = React.useRef(null);
+  const sounds = [
+    { id: 'rain', emoji: '🌧️', label: 'Lluvia', url: 'https://www.soundjay.com/nature/sounds/rain-01.mp3' },
+    { id: 'ocean', emoji: '🌊', label: 'Olas', url: 'https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3' },
+    { id: 'forest', emoji: '🌲', label: 'Bosque', url: 'https://www.soundjay.com/nature/sounds/birds-in-forest-1.mp3' },
+    { id: 'wind', emoji: '🌬️', label: 'Viento', url: 'https://www.soundjay.com/nature/sounds/wind-1.mp3' },
+  ];
+  const toggle = (s) => {
+    if (playing === s.id) { audioRef.current.pause(); setPlaying(null); }
+    else {
+      if (audioRef.current) audioRef.current.pause();
+      audioRef.current = new Audio(s.url);
+      audioRef.current.loop = true;
+      audioRef.current.play().catch(() => {});
+      setPlaying(s.id);
+    }
+  };
+  return (
+    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:10 }}>
+      {sounds.map(s => (
+        <button key={s.id} onClick={() => toggle(s)} style={{ padding:'14px 12px', borderRadius:14, border:`1px solid ${playing===s.id?'#7c5cfc':'#1e1e30'}`, background:playing===s.id?'#7c5cfc20':'#13131f', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
+          <span style={{ fontSize:28 }}>{s.emoji}</span>
+          <span style={{ fontSize:12, fontWeight:600, color:playing===s.id?'#7c5cfc':'#6b6b8a' }}>{s.label}</span>
+          <span style={{ fontSize:10, color:playing===s.id?'#7c5cfc':'#6b6b8a' }}>{playing===s.id?'⏸ Pausar':'▶ Escuchar'}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function PageDiario({ diary, onAdd, setPage }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
@@ -967,6 +1000,26 @@ function PageDiario({ diary, onAdd, setPage }) {
           </div>
         </>
       )}
+
+      
+      <div style={{ marginTop:20 }}>
+        <div style={{ color:'#6b6b8a', fontSize:11, letterSpacing:'0.2em', fontWeight:600, marginBottom:12 }}>SONIDOS</div>
+        <a href="https://www.youtube.com/watch?v=PivWY9wn5ps" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:10, textDecoration:'none' }}>
+          <div style={{ width:44, height:44, borderRadius:12, background:'#ff000020', border:'1px solid #ff000040', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>▶️</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>Playlist anticraving</div>
+            <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Abrir en YouTube</div>
+          </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=PmklOekNjA4" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:10, textDecoration:'none' }}>
+          <div style={{ width:44, height:44, borderRadius:12, background:'#ffffff10', border:'1px solid #ffffff20', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🎵</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>Man in the Mirror</div>
+            <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Michael Jackson</div>
+          </div>
+        </a>
+        <NatureSounds />
+      </div>
 
       {/* Meditación shortcut */}
       <button onClick={() => setPage("meditacion")} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
