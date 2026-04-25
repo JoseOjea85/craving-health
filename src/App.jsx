@@ -803,7 +803,9 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
     { nombre: 'Emergencias', numero: '112', descripcion: 'Emergencias generales', emoji: '🚨' },
   ]);
   const [myAnchors, setMyAnchors] = useState(anchors || []);
+  useEffect(() => { setMyAnchors(anchors || []); }, [anchors]);
   const [myBlackPhotos, setMyBlackPhotos] = useState(blackPhotos || []);
+  useEffect(() => { setMyBlackPhotos(blackPhotos || []); }, [blackPhotos]);
   const [myPlaylist, setMyPlaylist] = useState(profile?.playlist || [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror - Michael Jackson', url:'https://www.youtube.com/watch?v=PivWY9wn5ps&list=RDPivWY9wn5ps&start_radio=1' }]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
