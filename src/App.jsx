@@ -366,7 +366,7 @@ function WeekChart({ workouts, goal }) {
           const met = d.minutes >= goal;
           return (
             <div key={d.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: '100%', height: 80, display: 'flex', alignItems: 'flex-end', position: 'relative', height: 60 }}>
+              <div style={{ width: '100%', display: 'flex', alignItems: 'flex-end', position: 'relative', height: 60 }}>
                 <div style={{ position: 'absolute', bottom: Math.round((goal / max) * 60), left: 0, right: 0, borderTop: `1px dashed ${C.primary}40` }} />
                 <div style={{ width: '100%', height: Math.max(height, 3), borderRadius: 6, background: met ? `linear-gradient(to top, ${C.primary}, ${C.cyan})` : isToday ? `${C.primary}60` : C.border }} />
               </div>
