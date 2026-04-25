@@ -897,8 +897,8 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
 
 function NatureSounds() {
-  const [playing, setPlaying] = React.useState(null);
-  const audioRef = React.useRef(null);
+  const [playing, setPlaying] = useState(null);
+  const audioRef = useRef(null);
   const sounds = [
     { id: 'rain', emoji: '🌧️', label: 'Lluvia', url: 'https://www.soundjay.com/nature/sounds/rain-01.mp3' },
     { id: 'ocean', emoji: '🌊', label: 'Olas', url: 'https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3' },
