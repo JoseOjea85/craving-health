@@ -913,50 +913,21 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 
 
 
-function NatureSounds() {
-  const [playing, setPlaying] = useState(false);
-  const ctxRef = useRef(null);
-  const nodesRef = useRef([]);
 
-  const start = () => {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    ctxRef.current = ctx;
-    const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88];
-    const playNote = () => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = notes[Math.floor(Math.random() * notes.length)];
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.5);
-      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 3);
-      nodesRef.current.push(osc);
-    };
-    playNote();
-    const interval = setInterval(playNote, 2500);
-    nodesRef.current.push({ stop: () => clearInterval(interval) });
-    setPlaying(true);
-  };
-
-  const stop = () => {
-    nodesRef.current.forEach(n => { try { n.stop(); } catch(e) {} });
-    nodesRef.current = [];
-    if (ctxRef.current) { ctxRef.current.close(); ctxRef.current = null; }
-    setPlaying(false);
-  };
-
+function NatureSounds({ playlist }) {
+  const musicLinks = playlist && playlist.length > 0 ? playlist : [{ title: 'Música calmada', url: 'https://www.youtube.com/watch?v=PivWY9wn5ps' }];
   return (
-    <button onClick={playing ? stop : start} style={{ width:'100%', padding:'16px', borderRadius:14, border:`1px solid ${playing?'#7c5cfc':'#1e1e30'}`, background:playing?'#7c5cfc20':'#13131f', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, marginTop:10 }}>
-      <span style={{ fontSize:28 }}>{playing ? '⏸' : '🎵'}</span>
-      <div style={{ textAlign:'left' }}>
-        <div style={{ fontSize:14, fontWeight:600, color:playing?'#7c5cfc':'#f0f0ff' }}>{playing ? 'Pausar música' : 'Música calmada'}</div>
-        <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Notas suaves para calmar el craving</div>
-      </div>
-    </button>
+    <div style={{ marginTop:10 }}>
+      {musicLinks.map((p, i) => (
+        <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:8, textDecoration:'none' }}>
+          <div style={{ width:44, height:44, borderRadius:12, background:'#ff000020', border:'1px solid #ff000040', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🎵</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>{p.title}</div>
+            <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Abrir en YouTube</div>
+          </div>
+        </a>
+      ))}
+    </div>
   );
 }
 
@@ -1046,7 +1017,7 @@ function PageDiario({ diary, onAdd, setPage, playlist }) {
             </div>
           </a>
         ))}
-        <NatureSounds />
+        <NatureSounds playlist={playlist} />
       </div>
 
       {/* Meditación shortcut */}
