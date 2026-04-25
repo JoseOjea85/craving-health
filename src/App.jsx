@@ -960,6 +960,7 @@ function PageDiario({ diary, onAdd, setPage, playlist }) {
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
       <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Diario</h1>
+      <p style={{ fontSize: 13, color: C.primary, fontStyle: "italic", lineHeight: 1.6, marginBottom: 16, padding: "12px 16px", background: C.primary + "10", borderRadius: 12, border: "1px solid " + C.primary + "30" }}>"Algún día contarás la historia de cómo saliste adelante y serás la guía de superación para otra persona."</p>
       <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>¿Cómo estás hoy? Escríbelo.</p>
 
       {/* Today entry */}
