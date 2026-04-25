@@ -804,7 +804,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
   ]);
   const [myAnchors, setMyAnchors] = useState(anchors || []);
   const [myBlackPhotos, setMyBlackPhotos] = useState(blackPhotos || []);
-  const [myPlaylist, setMyPlaylist] = useState(profile?.playlist || [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror - Michael Jackson', url:'https://www.youtube.com/watch?v=PmklOekNjA4' }]);
+  const [myPlaylist, setMyPlaylist] = useState(profile?.playlist || [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror - Michael Jackson', url:'https://www.youtube.com/watch?v=PivWY9wn5ps&list=RDPivWY9wn5ps' }]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
@@ -1009,7 +1009,7 @@ function PageDiario({ diary, onAdd, setPage, playlist }) {
       
       <div style={{ marginTop:20 }}>
         <div style={{ color:'#6b6b8a', fontSize:11, letterSpacing:'0.2em', fontWeight:600, marginBottom:12 }}>SONIDOS</div>
-        {(playlist && playlist.length > 0 ? playlist : [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror', url:'https://www.youtube.com/watch?v=PmklOekNjA4' }]).map((p, i) => (
+        {(playlist && playlist.length > 0 ? playlist : [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror', url:'https://www.youtube.com/watch?v=PivWY9wn5ps&list=RDPivWY9wn5ps' }]).map((p, i) => (
           <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:10, textDecoration:'none' }}>
             <div style={{ width:44, height:44, borderRadius:12, background:'#ff000020', border:'1px solid #ff000040', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🎵</div>
             <div style={{ flex:1 }}>
