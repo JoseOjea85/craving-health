@@ -915,10 +915,10 @@ function NatureSounds() {
   const [playing, setPlaying] = useState(null);
   const audioRef = useRef(null);
   const sounds = [
-    { id: 'rain', emoji: '🌧️', label: 'Lluvia', url: 'https://www.soundjay.com/nature/sounds/rain-01.mp3' },
-    { id: 'ocean', emoji: '🌊', label: 'Olas', url: 'https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3' },
-    { id: 'forest', emoji: '🌲', label: 'Bosque', url: 'https://www.soundjay.com/nature/sounds/birds-in-forest-1.mp3' },
-    { id: 'wind', emoji: '🌬️', label: 'Viento', url: 'https://www.soundjay.com/nature/sounds/wind-1.mp3' },
+    { id: 'rain', emoji: '🌧️', label: 'Lluvia', url: 'https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3' },
+    { id: 'ocean', emoji: '🌊', label: 'Olas', url: 'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-loop-1196.mp3' },
+    { id: 'forest', emoji: '🌲', label: 'Bosque', url: 'https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1210.mp3' },
+    { id: 'wind', emoji: '🌬️', label: 'Viento', url: 'https://assets.mixkit.co/sfx/preview/mixkit-wind-and-trees-loop-1184.mp3' },
   ];
   const toggle = (s) => {
     if (playing === s.id) { audioRef.current.pause(); setPlaying(null); }
