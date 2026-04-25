@@ -361,13 +361,13 @@ function WeekChart({ workouts, goal }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 44, marginTop: 8 }}>
         {days.map((d) => {
-          const height = Math.round((d.minutes / max) * 50);
+          const height = Math.round((d.minutes / max) * 44);
           const isToday = d.key === format(new Date(), 'yyyy-MM-dd');
           const met = d.minutes >= goal;
           return (
             <div key={d.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <div style={{ width: '100%', display: 'flex', alignItems: 'flex-end', position: 'relative', height: 50 }}>
-                <div style={{ position: 'absolute', bottom: Math.round((goal / max) * 50), left: 0, right: 0, borderTop: `1px dashed ${C.primary}40` }} />
+                <div style={{ position: 'absolute', bottom: Math.round((goal / max) * 44), left: 0, right: 0, borderTop: `1px dashed ${C.primary}40` }} />
                 <div style={{ width: '100%', height: Math.max(height, 3), borderRadius: 6, background: met ? `linear-gradient(to top, ${C.primary}, ${C.cyan})` : isToday ? `${C.primary}60` : C.border }} />
               </div>
               <span style={{ fontSize: 10, color: isToday ? C.primary : C.muted, fontWeight: isToday ? 700 : 400 }}>{d.label}</span>
