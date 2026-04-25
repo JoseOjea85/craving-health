@@ -9,6 +9,58 @@ const C = {
   green: '#4ade80', red: '#f87171', text: '#f0f0ff', muted: '#6b6b8a',
 };
 
+
+const MANTRAS = [
+  "Algún día contarás la historia de cómo saliste adelante.",
+  "Un día a la vez. Hoy es suficiente.",
+  "Eres más fuerte que el impulso que sientes ahora.",
+  "La recuperación no es una línea recta. Sigue.",
+  "Cada momento de resistencia es una victoria.",
+  "Tu historia no ha terminado. Sigue escribiéndola.",
+  "El craving pasa. Tú te quedas.",
+  "No estás solo. Nunca lo has estado.",
+  "Hoy eliges tu futuro.",
+  "La fuerza que buscas ya está en ti.",
+];
+
+function CravingModal({ onSave, onClose }) {
+  const [intensity, setIntensity] = useState(5);
+  const [saving, setSaving] = useState(false);
+  const submit = async (resisted) => {
+    setSaving(true);
+    await onSave({ intensity, resisted });
+    setSaving(false);
+    onClose();
+  };
+  return (
+    <>
+      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', backdropFilter:'blur(4px)', zIndex:40 }} />
+      <div style={{ position:'fixed', left:0, right:0, bottom:0, zIndex:50, background:C.card, borderTop:`1px solid ${C.border}`, borderRadius:'24px 24px 0 0', padding:'24px 24px 48px', maxWidth:480, margin:'0 auto' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24 }}>
+          <h2 style={{ color:C.text, fontSize:18, fontWeight:700, margin:0 }}>Registrar craving</h2>
+          <button onClick={onClose} style={{ width:32, height:32, borderRadius:'50%', background:C.border, border:'none', cursor:'pointer', color:C.text, display:'flex', alignItems:'center', justifyContent:'center' }}><X size={16} /></button>
+        </div>
+        <p style={{ color:C.muted, fontSize:13, marginBottom:20 }}>Intensidad del craving</p>
+        <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:32 }}>
+          <button onClick={() => setIntensity(i => Math.max(1, i-1))} style={{ width:48, height:48, borderRadius:'50%', background:C.border, border:'none', color:C.text, fontSize:22, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>-</button>
+          <div style={{ flex:1, textAlign:'center' }}>
+            <div style={{ fontSize:52, fontWeight:900, color: intensity > 7 ? C.red : intensity > 4 ? C.orange : C.green }}>{intensity}</div>
+            <div style={{ fontSize:12, color:C.muted }}>de 10</div>
+          </div>
+          <button onClick={() => setIntensity(i => Math.min(10, i+1))} style={{ width:48, height:48, borderRadius:'50%', background:C.border, border:'none', color:C.text, fontSize:22, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>+</button>
+        </div>
+        <div style={{ display:'flex', gap:12 }}>
+          <button onClick={() => submit(true)} disabled={saving} style={{ flex:1, padding:'14px 0', borderRadius:14, background:`linear-gradient(135deg, ${C.green}, #22d3ee)`, border:'none', color:'#fff', fontWeight:700, fontSize:15, cursor:'pointer' }}>
+            ✓ Lo resistí
+          </button>
+          <button onClick={() => submit(false)} disabled={saving} style={{ flex:1, padding:'14px 0', borderRadius:14, background:C.border, border:'none', color:C.muted, fontWeight:700, fontSize:15, cursor:'pointer' }}>
+            Cedí
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
 const WORKOUT_ICONS = { caminar:'🚶', correr:'🏃', gimnasio:'🏋️', yoga:'🧘', ciclismo:'🚴', otro:'⚡' };
 
 const inputStyle = { width: '100%', padding: '12px 14px', borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 14, outline: 'none', marginBottom: 12 };
@@ -377,7 +429,7 @@ function LogModal({ onAdd, onClose }) {
 }
 
 // ─── PAGE: HOME ───────────────────────────────────────────────
-function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary }) {
+function PageHome({ workouts, profile, setPage, onSOS, onCraving, sobrietyDays, diary, cravings }) {
   const [userCount, setUserCount] = useState(null);
 
   useEffect(() => {
@@ -398,7 +450,14 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary }) {
         <p style={{ color: C.muted, fontSize: 13 }}>{greeting}{profile?.name ? `, ${profile.name}` : ''} 👋</p>
         <h1 style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Craving Health</h1>
       </div>
+      {/* Mantra del dia */}
+      <div style={{ background:`linear-gradient(135deg, ${C.primary}15, ${C.cyan}08)`, border:`1px solid ${C.primary}20`, borderRadius:16, padding:'14px 16px', marginBottom:16, textAlign:'center' }}>
+        <p style={{ fontSize:13, color:C.text, fontStyle:'italic', lineHeight:1.5 }}>{MANTRAS[new Date().getDate() % MANTRAS.length]}</p>
+      </div>
       <PulseCircle onSOS={onSOS} />
+      <button onClick={onCraving} style={{ width:'100%', padding:'14px', borderRadius:16, background:`${C.orange}15`, border:`1px solid ${C.orange}30`, color:C.orange, fontSize:14, fontWeight:700, cursor:'pointer', marginBottom:16, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+        ⚡ Estoy sintiendo un craving ahora
+      </button>
       {sobrietyDays > 0 && (
         <div style={{ background: `linear-gradient(135deg, ${C.green}20, ${C.cyan}10)`, border: `1px solid ${C.green}40`, borderRadius: 20, padding: '20px 24px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ fontSize: 40 }}>🏆</div>
@@ -977,6 +1036,8 @@ export default function App() {
   const [anchors, setAnchors] = useState([]);
   const [blackPhotos, setBlackPhotos] = useState([]);
   const [diary, setDiary] = useState([]);
+  const [cravings, setCravings] = useState([]);
+  const [showCraving, setShowCraving] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -995,18 +1056,20 @@ export default function App() {
 
   const loadData = async () => {
     const uid = user.id;
-    const [{ data: prof }, { data: w }, { data: c }, { data: h }, { data: d }] = await Promise.all([
+    const [{ data: prof }, { data: w }, { data: c }, { data: h }, { data: d }, { data: cr }] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', uid).single(),
       supabase.from('workouts').select('*').eq('user_id', uid).order('date', { ascending: false }),
       supabase.from('contacts').select('*').eq('user_id', uid),
       supabase.from('help_lines').select('*').eq('user_id', uid),
       supabase.from('diary').select('*').eq('user_id', uid).order('date', { ascending: false }),
+      supabase.from('cravings').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
     ]);
     if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); }
     if (w) setWorkouts(w);
     if (c) setContacts(c);
     if (h) setHelpLines(h);
     if (d) setDiary(d);
+    if (cr) setCravings(cr);
   };
 
   const addWorkout = async (data) => {
@@ -1029,6 +1092,10 @@ export default function App() {
     setBlackPhotos(b);
   };
 
+  const addCraving = async (data) => {
+    const { data: cr } = await supabase.from('cravings').insert({ ...data, user_id: user.id }).select().single();
+    if (cr) setCravings(prev => [cr, ...prev]);
+  };
   const addDiary = async (data) => {
     const today = format(new Date(), 'yyyy-MM-dd');
     await supabase.from('diary').delete().eq('user_id', user.id).eq('date', today);
@@ -1054,7 +1121,7 @@ export default function App() {
   const sobrietyDays = profile?.sobriety_date ? differenceInDays(new Date(), new Date(profile.sobriety_date)) : 0;
 
   const pages = {
-    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} />,
+    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} onCraving={() => setShowCraving(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} cravings={cravings} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} />,
     meditacion: <PageMeditacion />,
     diario: <PageDiario diary={diary} onAdd={addDiary} />,
@@ -1065,6 +1132,7 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: ${C.bg}; } input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); } input::placeholder { color: ${C.muted}; } @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
+      {showCraving && <CravingModal onSave={addCraving} onClose={() => setShowCraving(false)} />}
       {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} />}
       {pages[page]}
       <BottomNav page={page} setPage={setPage} />
