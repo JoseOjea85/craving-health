@@ -137,7 +137,7 @@ function PulseCircle({ onSOS }) {
   const color = danger ? C.red : bpm > 75 ? C.orange : C.primary;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
       <button onClick={onSOS} style={{ width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle at 40% 35%, ${color}35, ${color}10)`, border: `2.5px solid ${color}60`, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `scale(${scale})`, transition: 'transform 0.1s ease', boxShadow: `0 0 ${danger ? 40 : 20}px ${color}30`, position: 'relative' }}>
         <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: `1px solid ${color}25`, animation: 'pulseRing 1.5s ease-out infinite' }} />
         <div style={{ position: 'absolute', inset: -20, borderRadius: '50%', border: `1px solid ${color}12`, animation: 'pulseRing 1.5s ease-out infinite 0.4s' }} />
@@ -151,34 +151,6 @@ function PulseCircle({ onSOS }) {
         {danger ? '⚠️ PULSO ELEVADO · TOCA PARA AYUDA' : 'TOCA SI ESTÁS EN RIESGO'}
       </div>
       <style>{`@keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
-    </div>
-  );
-}
-
-// ─── SOS EYE (gemelo del pulso en Home) ──────────────────────
-function SOSEye({ onSOS }) {
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const beat = () => {
-      setScale(1.08);
-      setTimeout(() => setScale(1), 220);
-    };
-    beat();
-    const t = setInterval(beat, 1800);
-    return () => clearInterval(t);
-  }, []);
-  const color = '#f87171';
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <button onClick={onSOS} aria-label="SOS" style={{ width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle at 40% 35%, ${color}55, ${color}15)`, border: `2.5px solid ${color}80`, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `scale(${scale})`, transition: 'transform 0.2s ease', boxShadow: `0 0 30px ${color}45`, position: 'relative', color: '#fff' }}>
-        <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: `1px solid ${color}35`, animation: 'pulseRing 1.8s ease-out infinite' }} />
-        <div style={{ position: 'absolute', inset: -20, borderRadius: '50%', border: `1px solid ${color}20`, animation: 'pulseRing 1.8s ease-out infinite 0.5s' }} />
-        <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: '0.08em', lineHeight: 1 }}>SOS</div>
-        <div style={{ fontSize: 10, opacity: 0.85, marginTop: 6, letterSpacing: '0.15em', fontWeight: 600 }}>AYUDA AHORA</div>
-      </button>
-      <div style={{ marginTop: 10, fontSize: 11, color: '#6b6b8a', letterSpacing: '0.1em' }}>
-        TOCA SI LO NECESITAS
-      </div>
     </div>
   );
 }
@@ -428,10 +400,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
         <p style={{ color: C.muted, fontSize: 13 }}>{greeting}{profile?.name ? `, ${profile.name}` : ''} 👋</p>
         <h1 style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Craving Health</h1>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: 24, marginBottom: 24 }}>
-        <PulseCircle onSOS={onSOS} />
-        <SOSEye onSOS={onSOS} />
-      </div>
+      <PulseCircle onSOS={onSOS} />
       {sobrietyDays > 0 && (
         <div style={{ background: `linear-gradient(135deg, ${C.green}20, ${C.cyan}10)`, border: `1px solid ${C.green}40`, borderRadius: 20, padding: '20px 24px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ fontSize: 40 }}>🏆</div>
@@ -917,7 +886,6 @@ export default function App() {
   const [anchors, setAnchors] = useState([]);
   const [blackPhotos, setBlackPhotos] = useState([]);
   const [diary, setDiary] = useState([]);
-  const [toast, setToast] = useState('');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -945,25 +913,6 @@ export default function App() {
     loadData();
   }, [user]);
 
-  useEffect(() => {
-    if (!user) return;
-    if (typeof Notification === 'undefined') return;
-    if (Notification.permission === 'default') {
-      const askedKey = 'notifAsked';
-      if (!localStorage.getItem(askedKey)) {
-        Notification.requestPermission();
-        localStorage.setItem(askedKey, '1');
-      }
-    }
-    const checkTime = () => {
-      const now = new Date();
-      if (now.getHours() >= 8) triggerDailyReminder(workouts);
-    };
-    checkTime();
-    const interval = setInterval(checkTime, 60000);
-    return () => clearInterval(interval);
-  }, [user, workouts]);
-
   const loadData = async () => {
     const uid = user.id;
     const [{ data: prof }, { data: w }, { data: c }, { data: h }, { data: d }] = await Promise.all([
@@ -986,9 +935,11 @@ export default function App() {
   };
 
   const addColdShower = async () => {
+    console.log('🚿 addColdShower llamado, user:', user?.id);
     const today = format(new Date(), 'yyyy-MM-dd');
-    const { data: w } = await supabase.from('workouts').insert({ date: today, minutes: 1, type: 'ducha', user_id: user.id }).select().single();
-    if (w) { setWorkouts(prev => [w, ...prev]); setToast('Ducha registrada'); setTimeout(() => setToast(''), 2000); }
+    const { data: w, error } = await supabase.from('workouts').insert({ date: today, minutes: 1, type: 'ducha', user_id: user.id }).select().single();
+    if (error) { console.error('🚿 ERROR:', error); alert('Error: ' + error.message); }
+    if (w) { console.log('🚿 OK guardado:', w); setWorkouts(prev => [w, ...prev]); }
   };
 
   const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b }) => {
@@ -1042,18 +993,6 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: ${C.bg}; } input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); } input::placeholder { color: ${C.muted}; } @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
-      {/* SOS flotante - solo en páginas distintas a home */}
-      {page !== 'home' && (
-        <button onClick={() => setShowSOS(true)} aria-label="SOS" style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)', right: 'calc(env(safe-area-inset-right, 0px) + 16px)', zIndex: 60, width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #f87171, #dc2626)', border: '2px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 900, fontSize: 14, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 8px 24px rgba(248,113,113,0.5), 0 0 0 5px rgba(248,113,113,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'sosPulse 2.4s ease-in-out infinite' }}>
-          SOS
-        </button>
-      )}
-      <style>{`@keyframes sosPulse { 0%,100% { box-shadow: 0 6px 20px rgba(248,113,113,0.45), 0 0 0 4px rgba(248,113,113,0.12); } 50% { box-shadow: 0 6px 24px rgba(248,113,113,0.65), 0 0 0 10px rgba(248,113,113,0.05); } }`}</style>
-      {toast && (
-        <div style={{ position: 'fixed', bottom: 90, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #7c5cfc, #22d3ee)', color: '#fff', padding: '12px 20px', borderRadius: 14, fontSize: 14, fontWeight: 600, boxShadow: '0 8px 24px rgba(124,92,252,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 18 }}>🚿</span>{toast}
-        </div>
-      )}
       {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} />}
       {pages[page]}
       <BottomNav page={page} setPage={setPage} />
