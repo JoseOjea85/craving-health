@@ -454,7 +454,6 @@ function PageHome({ workouts, profile, setPage, onSOS, onCraving, sobrietyDays, 
       <div style={{ background:`linear-gradient(135deg, ${C.primary}15, ${C.cyan}08)`, border:`1px solid ${C.primary}20`, borderRadius:16, padding:'14px 16px', marginBottom:16, textAlign:'center' }}>
         <p style={{ fontSize:13, color:C.text, fontStyle:'italic', lineHeight:1.5 }}>{MANTRAS[new Date().getDate() % MANTRAS.length]}</p>
       </div>
-      <PulseCircle onSOS={onSOS} />
       <button onClick={onCraving} style={{ width:'100%', padding:'14px', borderRadius:16, background:`${C.orange}15`, border:`1px solid ${C.orange}30`, color:C.orange, fontSize:14, fontWeight:700, cursor:'pointer', marginBottom:16, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
         ⚡ Estoy sintiendo un craving ahora
       </button>

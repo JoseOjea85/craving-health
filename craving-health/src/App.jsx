@@ -226,7 +226,7 @@ function BreathingExercise({ onDone }) {
 }
 
 // ─── SOS MODAL ────────────────────────────────────────────────
-function SOSModal({ onClose, anchors, blackPhotos, contacts }) {
+function SOSModal({ onClose, anchors, blackPhotos, contacts, youtubePlaylist, setPage }) {
   const [phase, setPhase] = useState('sos');
   if (phase === 'breathe') return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.97)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
@@ -271,6 +271,7 @@ function SOSModal({ onClose, anchors, blackPhotos, contacts }) {
           <button onClick={() => setPhase('breathe')} style={{ padding: '16px', borderRadius: 16, background: `${C.primary}20`, border: `1px solid ${C.primary}40`, color: C.text, fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>🌬️ Respiración guiada</button>
           <button onClick={() => setPhase('anchors')} style={{ padding: '16px', borderRadius: 16, background: `${C.cyan}15`, border: `1px solid ${C.cyan}30`, color: C.text, fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>💙 Ver mis motivos</button>
           <button onClick={() => setPhase('black')} style={{ padding: '16px', borderRadius: 16, background: '#111', border: '1px solid #333', color: '#aaa', fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>🖤 Ver foto negra</button>
+          <button onClick={() => { if (youtubePlaylist) window.open(youtubePlaylist, '_blank'); else { onClose(); setPage('perfil'); } }} style={{ padding: '16px', borderRadius: 16, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: C.text, fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>🎵 {youtubePlaylist ? 'Mi música anti-craving' : 'Configurar playlist'}</button>
         </div>
         <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600, marginBottom: 12 }}>LLAMAR AHORA</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
@@ -407,7 +408,7 @@ function LogModal({ onAdd, onClose }) {
 }
 
 // ─── PAGE: HOME ───────────────────────────────────────────────
-function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onColdShower }) {
+function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onColdShower, youtubePlaylist }) {
   const [userCount, setUserCount] = useState(null);
 
   useEffect(() => {
@@ -482,9 +483,10 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
           { icon: '🏃', title: 'Registrar actividad', sub: 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary },
           { icon: '🧘', title: 'Meditación matinal', sub: 'Empieza el día con calma', page: 'meditacion', color: C.cyan },
           { icon: '🚿', title: 'Ducha fría', sub: 'Registrar que la has hecho', action: 'coldShower', color: C.cyan },
+          { icon: '🎵', title: 'Mi música anti-craving', sub: youtubePlaylist ? 'Abrir playlist de YouTube' : 'Configura tu playlist en Perfil', action: 'youtube', color: '#ef4444' },
           { icon: '💙', title: 'Necesito apoyo', sub: 'Teléfonos y recursos', page: 'apoyo', color: C.green },
         ].map(item => (
-          <button key={item.page || item.action} onClick={() => item.action === 'coldShower' ? onColdShower() : setPage(item.page)} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+          <button key={item.page || item.action} onClick={() => { if (item.action === 'coldShower') onColdShower(); else if (item.action === 'youtube') { if (youtubePlaylist) window.open(youtubePlaylist, '_blank'); else setPage('perfil'); } else setPage(item.page); }} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', width: '100%', textAlign: 'left' }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: `${item.color}15`, border: `1px solid ${item.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{item.icon}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{item.title}</div>
@@ -675,7 +677,7 @@ function PageApoyo({ contacts, helpLines }) {
 }
 
 // ─── PAGE: PERFIL ─────────────────────────────────────────────
-function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary }) {
+function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary, youtubePlaylist }) {
   const [name, setName] = useState(profile?.name || '');
   const [sobrietyDate, setSobrietyDate] = useState(profile?.sobriety_date || '');
   const [myContacts, setMyContacts] = useState(contacts?.length > 0 ? contacts : [{ name: '', phone: '', role: '' }, { name: '', phone: '', role: '' }]);
@@ -687,6 +689,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
   ]);
   const [myAnchors, setMyAnchors] = useState(anchors || []);
   const [myBlackPhotos, setMyBlackPhotos] = useState(blackPhotos || []);
+  const [myYt, setMyYt] = useState(youtubePlaylist || '');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
@@ -694,7 +697,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 
   const saveAll = async () => {
     setSaving(true);
-    await onSave({ name, sobrietyDate, contacts: myContacts, helpLines: myHelpLines, anchors: myAnchors, blackPhotos: myBlackPhotos });
+    await onSave({ name, sobrietyDate, contacts: myContacts, helpLines: myHelpLines, anchors: myAnchors, blackPhotos: myBlackPhotos, yt: myYt });
     setSaving(false); setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -768,6 +771,10 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
       </div>
 
       <PhotoUploader photos={myAnchors} onAdd={p => setMyAnchors([...myAnchors, p])} onRemove={i => setMyAnchors(myAnchors.filter((_, idx) => idx !== i))} title="💙 Anclaje emocional" desc="Fotos de tus motivos para seguir" dark={false} />
+      <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>🎵 PLAYLIST ANTI-CRAVING</label>
+      <div style={{ fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 8 }}>Pega aquí el enlace a tu playlist de YouTube</div>
+      <input value={myYt} onChange={e => setMyYt(e.target.value)} placeholder="https://youtube.com/playlist?list=..." style={inputStyle} />
+      
       <PhotoUploader photos={myBlackPhotos} onAdd={p => setMyBlackPhotos([...myBlackPhotos, p])} onRemove={i => setMyBlackPhotos(myBlackPhotos.filter((_, idx) => idx !== i))} title="🖤 Foto negra" desc="Imágenes que te recuerdan el daño" dark={true} />
 
       <button onClick={saveAll} disabled={saving} style={{ width: '100%', padding: '16px 0', borderRadius: 16, background: saved ? `${C.green}30` : `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: saved ? `1px solid ${C.green}` : 'none', color: saved ? C.green : '#fff', fontWeight: 700, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
@@ -918,6 +925,7 @@ export default function App() {
   const [blackPhotos, setBlackPhotos] = useState([]);
   const [diary, setDiary] = useState([]);
   const [toast, setToast] = useState('');
+  const [youtubePlaylist, setYoutubePlaylist] = useState('');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -957,7 +965,6 @@ export default function App() {
     }
     const checkTime = () => {
       const now = new Date();
-      if (now.getHours() >= 8) triggerDailyReminder(workouts);
     };
     checkTime();
     const interval = setInterval(checkTime, 60000);
@@ -973,7 +980,7 @@ export default function App() {
       supabase.from('help_lines').select('*').eq('user_id', uid),
       supabase.from('diary').select('*').eq('user_id', uid).order('date', { ascending: false }),
     ]);
-    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); }
+    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); setYoutubePlaylist(prof.youtube_playlist || ''); }
     if (w) setWorkouts(w);
     if (c) setContacts(c);
     if (h) setHelpLines(h);
@@ -991,8 +998,8 @@ export default function App() {
     if (w) { setWorkouts(prev => [w, ...prev]); setToast('Ducha registrada'); setTimeout(() => setToast(''), 2000); }
   };
 
-  const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b }) => {
-    await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b) });
+  const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b, yt }) => {
+    await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b), youtube_playlist: yt || null });
     await supabase.from('contacts').delete().eq('user_id', user.id);
     const validContacts = c.filter(x => x.name || x.phone);
     if (validContacts.length > 0) await supabase.from('contacts').insert(validContacts.map(x => ({ ...x, user_id: user.id })));
@@ -1004,6 +1011,7 @@ export default function App() {
     setHelpLines(validH);
     setAnchors(a);
     setBlackPhotos(b);
+    setYoutubePlaylist(yt || '');
   };
 
   const addDiary = async (data) => {
@@ -1031,12 +1039,12 @@ export default function App() {
   const sobrietyDays = profile?.sobriety_date ? differenceInDays(new Date(), new Date(profile.sobriety_date)) : 0;
 
   const pages = {
-    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} />,
+    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} />,
     diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
     meditacion: <PageMeditacion />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
-    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} />,
+    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} />,
   };
 
   return (
@@ -1054,7 +1062,7 @@ export default function App() {
           <span style={{ fontSize: 18 }}>🚿</span>{toast}
         </div>
       )}
-      {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} />}
+      {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} youtubePlaylist={youtubePlaylist} setPage={setPage} />}
       {pages[page]}
       <BottomNav page={page} setPage={setPage} />
     </div>
