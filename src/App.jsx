@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Flame, Plus, X, Check, Brain, Heart, Phone, User, Home, Activity, ChevronRight, Loader2, Camera, Play, Pause, Trophy, LogOut, BookOpen, Star } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
-import { supabase } from './lib/supabase';
+import { supabase } from './supabase';
 
 const C = {
   bg: '#0d0d14', card: '#13131f', border: '#1e1e30',
