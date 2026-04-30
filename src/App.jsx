@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Flame, Plus, X, Check, Brain, Heart, Phone, User, Home, Activity, ChevronRight, Loader2, Camera, Play, Pause, Trophy, LogOut, BookOpen, Star } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
-import { supabase } from './supabase';
+import { supabase } from './lib/supabase';
 
 const C = {
   bg: '#0d0d14', card: '#13131f', border: '#1e1e30',
@@ -9,59 +9,7 @@ const C = {
   green: '#4ade80', red: '#f87171', text: '#f0f0ff', muted: '#6b6b8a',
 };
 
-
-const MANTRAS = [
-  "Algún día contarás la historia de cómo saliste adelante y serás la guía de superación para otra persona.",
-  "Un día a la vez. Hoy es suficiente.",
-  "Eres más fuerte que el impulso que sientes ahora.",
-  "La recuperación no es una línea recta. Sigue.",
-  "Cada momento de resistencia es una victoria.",
-  "Tu historia no ha terminado. Sigue escribiéndola.",
-  "El craving pasa. Tú te quedas.",
-  "No estás solo. Nunca lo has estado.",
-  "Hoy eliges tu futuro.",
-  "La fuerza que buscas ya está en ti.",
-];
-
-function CravingModal({ onSave, onClose }) {
-  const [intensity, setIntensity] = useState(5);
-  const [saving, setSaving] = useState(false);
-  const submit = async (resisted) => {
-    setSaving(true);
-    await onSave({ intensity, resisted });
-    setSaving(false);
-    onClose();
-  };
-  return (
-    <>
-      <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', backdropFilter:'blur(4px)', zIndex:40 }} />
-      <div style={{ position:'fixed', left:0, right:0, bottom:0, zIndex:50, background:C.card, borderTop:`1px solid ${C.border}`, borderRadius:'24px 24px 0 0', padding:'24px 24px 48px', maxWidth:480, margin:'0 auto' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24 }}>
-          <h2 style={{ color:C.text, fontSize:18, fontWeight:700, margin:0 }}>Registrar craving</h2>
-          <button onClick={onClose} style={{ width:32, height:32, borderRadius:'50%', background:C.border, border:'none', cursor:'pointer', color:C.text, display:'flex', alignItems:'center', justifyContent:'center' }}><X size={16} /></button>
-        </div>
-        <p style={{ color:C.muted, fontSize:13, marginBottom:20 }}>Intensidad del craving</p>
-        <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:32 }}>
-          <button onClick={() => setIntensity(i => Math.max(1, i-1))} style={{ width:48, height:48, borderRadius:'50%', background:C.border, border:'none', color:C.text, fontSize:22, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>-</button>
-          <div style={{ flex:1, textAlign:'center' }}>
-            <div style={{ fontSize:52, fontWeight:900, color: intensity > 7 ? C.red : intensity > 4 ? C.orange : C.green }}>{intensity}</div>
-            <div style={{ fontSize:12, color:C.muted }}>de 10</div>
-          </div>
-          <button onClick={() => setIntensity(i => Math.min(10, i+1))} style={{ width:48, height:48, borderRadius:'50%', background:C.border, border:'none', color:C.text, fontSize:22, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>+</button>
-        </div>
-        <div style={{ display:'flex', gap:12 }}>
-          <button onClick={() => submit(true)} disabled={saving} style={{ flex:1, padding:'14px 0', borderRadius:14, background:`linear-gradient(135deg, ${C.green}, #22d3ee)`, border:'none', color:'#fff', fontWeight:700, fontSize:15, cursor:'pointer' }}>
-            ✓ Lo resistí
-          </button>
-          <button onClick={() => submit(false)} disabled={saving} style={{ flex:1, padding:'14px 0', borderRadius:14, background:C.border, border:'none', color:C.muted, fontWeight:700, fontSize:15, cursor:'pointer' }}>
-            Cedí
-          </button>
-        </div>
-      </div>
-    </>
-  );
-}
-const WORKOUT_ICONS = { caminar:'🚶', correr:'🏃', gimnasio:'🏋️', yoga:'🧘', ciclismo:'🚴', otro:'⚡' };
+const WORKOUT_ICONS = { caminar:'🚶', correr:'🏃', gimnasio:'🏋️', yoga:'🧘', ciclismo:'🚴', ducha:'🚿', otro:'⚡' };
 
 const inputStyle = { width: '100%', padding: '12px 14px', borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 14, outline: 'none', marginBottom: 12 };
 
@@ -129,6 +77,8 @@ function AuthPage({ onAuth }) {
           </button>
         </div>
       </div>
+    
+      <div style={{ marginTop: 24, maxWidth: 400, padding: "14px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", textAlign: "center" }}><p style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, lineHeight: 1.6, margin: 0 }}><span style={{ fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>Version Beta</span> — Esta app se ofrece sin garantias. El uso es responsabilidad exclusiva del usuario.</p></div>
     </div>
   );
 }
@@ -187,7 +137,7 @@ function PulseCircle({ onSOS }) {
   const color = danger ? C.red : bpm > 75 ? C.orange : C.primary;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <button onClick={onSOS} style={{ width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle at 40% 35%, ${color}35, ${color}10)`, border: `2.5px solid ${color}60`, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `scale(${scale})`, transition: 'transform 0.1s ease', boxShadow: `0 0 ${danger ? 40 : 20}px ${color}30`, position: 'relative' }}>
         <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: `1px solid ${color}25`, animation: 'pulseRing 1.5s ease-out infinite' }} />
         <div style={{ position: 'absolute', inset: -20, borderRadius: '50%', border: `1px solid ${color}12`, animation: 'pulseRing 1.5s ease-out infinite 0.4s' }} />
@@ -201,6 +151,34 @@ function PulseCircle({ onSOS }) {
         {danger ? '⚠️ PULSO ELEVADO · TOCA PARA AYUDA' : 'TOCA SI ESTÁS EN RIESGO'}
       </div>
       <style>{`@keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
+    </div>
+  );
+}
+
+// ─── SOS EYE (gemelo del pulso en Home) ──────────────────────
+function SOSEye({ onSOS }) {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const beat = () => {
+      setScale(1.08);
+      setTimeout(() => setScale(1), 220);
+    };
+    beat();
+    const t = setInterval(beat, 1800);
+    return () => clearInterval(t);
+  }, []);
+  const color = '#f87171';
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <button onClick={onSOS} aria-label="SOS" style={{ width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle at 40% 35%, ${color}55, ${color}15)`, border: `2.5px solid ${color}80`, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `scale(${scale})`, transition: 'transform 0.2s ease', boxShadow: `0 0 30px ${color}45`, position: 'relative', color: '#fff' }}>
+        <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: `1px solid ${color}35`, animation: 'pulseRing 1.8s ease-out infinite' }} />
+        <div style={{ position: 'absolute', inset: -20, borderRadius: '50%', border: `1px solid ${color}20`, animation: 'pulseRing 1.8s ease-out infinite 0.5s' }} />
+        <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: '0.08em', lineHeight: 1 }}>SOS</div>
+        <div style={{ fontSize: 10, opacity: 0.85, marginTop: 6, letterSpacing: '0.15em', fontWeight: 600 }}>AYUDA AHORA</div>
+      </button>
+      <div style={{ marginTop: 10, fontSize: 11, color: '#6b6b8a', letterSpacing: '0.1em' }}>
+        TOCA SI LO NECESITAS
+      </div>
     </div>
   );
 }
@@ -248,7 +226,7 @@ function BreathingExercise({ onDone }) {
 }
 
 // ─── SOS MODAL ────────────────────────────────────────────────
-function SOSModal({ onClose, anchors, blackPhotos, contacts }) {
+function SOSModal({ onClose, anchors, blackPhotos, contacts, youtubePlaylist, setPage }) {
   const [phase, setPhase] = useState('sos');
   if (phase === 'breathe') return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.97)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
@@ -293,6 +271,7 @@ function SOSModal({ onClose, anchors, blackPhotos, contacts }) {
           <button onClick={() => setPhase('breathe')} style={{ padding: '16px', borderRadius: 16, background: `${C.primary}20`, border: `1px solid ${C.primary}40`, color: C.text, fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>🌬️ Respiración guiada</button>
           <button onClick={() => setPhase('anchors')} style={{ padding: '16px', borderRadius: 16, background: `${C.cyan}15`, border: `1px solid ${C.cyan}30`, color: C.text, fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>💙 Ver mis motivos</button>
           <button onClick={() => setPhase('black')} style={{ padding: '16px', borderRadius: 16, background: '#111', border: '1px solid #333', color: '#aaa', fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>🖤 Ver foto negra</button>
+          <button onClick={() => { if (youtubePlaylist) window.open(youtubePlaylist, '_blank'); else { onClose(); setPage('perfil'); } }} style={{ padding: '16px', borderRadius: 16, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: C.text, fontWeight: 700, fontSize: 16, cursor: 'pointer' }}>🎵 {youtubePlaylist ? 'Mi música anti-craving' : 'Configurar playlist'}</button>
         </div>
         <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600, marginBottom: 12 }}>LLAMAR AHORA</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
@@ -354,20 +333,20 @@ function WeekChart({ workouts, goal }) {
   });
   const max = Math.max(goal * 1.5, ...days.map(d => d.minutes), 1);
   return (
-    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 20, padding: '12px 16px', marginBottom: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 20, padding: 20, marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <span style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>ESTA SEMANA</span>
         <span style={{ color: C.muted, fontSize: 11 }}>Meta: {goal} min/día</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 70, marginTop: 8, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 80 }}>
         {days.map((d) => {
-          const height = Math.round((d.minutes / max) * 70);
+          const height = Math.round((d.minutes / max) * 80);
           const isToday = d.key === format(new Date(), 'yyyy-MM-dd');
           const met = d.minutes >= goal;
           return (
             <div key={d.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: '100%', display: 'flex', alignItems: 'flex-end', position: 'relative', height: 50 }}>
-                <div style={{ position: 'absolute', bottom: Math.round((goal / max) * 70), left: 0, right: 0, borderTop: `1px dashed ${C.primary}40` }} />
+              <div style={{ width: '100%', height: 80, display: 'flex', alignItems: 'flex-end', position: 'relative' }}>
+                <div style={{ position: 'absolute', bottom: Math.round((goal / max) * 80), left: 0, right: 0, borderTop: `1px dashed ${C.primary}40` }} />
                 <div style={{ width: '100%', height: Math.max(height, 3), borderRadius: 6, background: met ? `linear-gradient(to top, ${C.primary}, ${C.cyan})` : isToday ? `${C.primary}60` : C.border }} />
               </div>
               <span style={{ fontSize: 10, color: isToday ? C.primary : C.muted, fontWeight: isToday ? 700 : 400 }}>{d.label}</span>
@@ -429,7 +408,7 @@ function LogModal({ onAdd, onClose }) {
 }
 
 // ─── PAGE: HOME ───────────────────────────────────────────────
-function PageHome({ workouts, profile, setPage, onSOS, onCraving, sobrietyDays, diary, cravings }) {
+function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onColdShower, youtubePlaylist }) {
   const [userCount, setUserCount] = useState(null);
 
   useEffect(() => {
@@ -450,13 +429,9 @@ function PageHome({ workouts, profile, setPage, onSOS, onCraving, sobrietyDays, 
         <p style={{ color: C.muted, fontSize: 13 }}>{greeting}{profile?.name ? `, ${profile.name}` : ''} 👋</p>
         <h1 style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Craving Health</h1>
       </div>
-      {/* Mantra del dia */}
-      <div style={{ background:`linear-gradient(135deg, ${C.primary}15, ${C.cyan}08)`, border:`1px solid ${C.primary}20`, borderRadius:16, padding:'14px 16px', marginBottom:16, textAlign:'center' }}>
-        <p style={{ fontSize:13, color:C.text, fontStyle:'italic', lineHeight:1.5 }}>{MANTRAS[new Date().getDate() % MANTRAS.length]}</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: 24, marginBottom: 24 }}>
+        <SOSEye onSOS={onSOS} />
       </div>
-      <button onClick={onCraving} style={{ width:'100%', padding:'14px', borderRadius:16, background:`${C.orange}15`, border:`1px solid ${C.orange}30`, color:C.orange, fontSize:14, fontWeight:700, cursor:'pointer', marginBottom:16, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
-        ⚡ Estoy sintiendo un craving ahora
-      </button>
       {sobrietyDays > 0 && (
         <div style={{ background: `linear-gradient(135deg, ${C.green}20, ${C.cyan}10)`, border: `1px solid ${C.green}40`, borderRadius: 20, padding: '20px 24px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ fontSize: 40 }}>🏆</div>
@@ -506,9 +481,11 @@ function PageHome({ workouts, profile, setPage, onSOS, onCraving, sobrietyDays, 
         {[
           { icon: '🏃', title: 'Registrar actividad', sub: 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary },
           { icon: '🧘', title: 'Meditación matinal', sub: 'Empieza el día con calma', page: 'meditacion', color: C.cyan },
+          { icon: '🚿', title: 'Ducha fría', sub: 'Registrar que la has hecho', action: 'coldShower', color: C.cyan },
+          { icon: '🎵', title: 'Mi música anti-craving', sub: youtubePlaylist ? 'Abrir playlist de YouTube' : 'Configura tu playlist en Perfil', action: 'youtube', color: '#ef4444' },
           { icon: '💙', title: 'Necesito apoyo', sub: 'Teléfonos y recursos', page: 'apoyo', color: C.green },
         ].map(item => (
-          <button key={item.page} onClick={() => setPage(item.page)} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+          <button key={item.page || item.action} onClick={() => { if (item.action === 'coldShower') onColdShower(); else if (item.action === 'youtube') { if (youtubePlaylist) window.open(youtubePlaylist, '_blank'); else setPage('perfil'); } else setPage(item.page); }} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', width: '100%', textAlign: 'left' }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: `${item.color}15`, border: `1px solid ${item.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{item.icon}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{item.title}</div>
@@ -523,7 +500,7 @@ function PageHome({ workouts, profile, setPage, onSOS, onCraving, sobrietyDays, 
 }
 
 // ─── PAGE: ACTIVIDAD ──────────────────────────────────────────
-function PageActividad({ workouts, onAdd }) {
+function PageActividad({ workouts, onAdd, onColdShower }) {
   const [showLog, setShowLog] = useState(false);
   const today = format(new Date(), 'yyyy-MM-dd');
   const todayMin = workouts.filter(w => w.date === today).reduce((s, w) => s + w.minutes, 0);
@@ -553,6 +530,14 @@ function PageActividad({ workouts, onAdd }) {
           </div>
         ))}
       </div>
+      <button onClick={onColdShower} style={{ width: '100%', padding: '14px 16px', borderRadius: 16, background: `linear-gradient(135deg, ${C.cyan}25, ${C.primary}15)`, border: `1px solid ${C.cyan}40`, color: C.text, fontWeight: 600, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${C.cyan}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🚿</div>
+        <div style={{ textAlign: 'left', flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>Ducha fría</div>
+          <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Toca para registrar que la has hecho</div>
+        </div>
+        <Check size={18} color={C.cyan} />
+      </button>
       <WeekChart workouts={workouts} goal={30} />
       {workouts.filter(w => w.date === today).length > 0 && (
         <div style={{ marginBottom: 16 }}>
@@ -578,105 +563,6 @@ function PageActividad({ workouts, onAdd }) {
 }
 
 // ─── PAGE: MEDITACIÓN ─────────────────────────────────────────
-
-function BreathingCircle({ running }) {
-  const [phase, setPhase] = useState(0);
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => setPhase(p => (p + 1) % 3), 2000);
-    return () => clearInterval(t);
-  }, [running]);
-  const sizes = [80, 120, 100];
-  const labels = ["Inhala", "Reten", "Exhala"];
-  const size = sizes[phase];
-  return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
-      <div style={{ width:size, height:size, borderRadius:"50%", background:"radial-gradient(circle, #7c5cfc40, #22d3ee20)", border:"2px solid #7c5cfc60", transition:"all 1.8s ease-in-out", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 30px #7c5cfc30" }}>
-        <span style={{ fontSize:12, color:"#7c5cfc", fontWeight:600 }}>{labels[phase]}</span>
-      </div>
-    </div>
-  );
-}
-function CircularProgress({ seconds, totalSeconds }) {
-  const size = 140, r = 60, circ = 2 * Math.PI * r;
-  const progress = Math.min(seconds / totalSeconds, 1);
-  return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
-      <svg width={size} height={size}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e1e30" strokeWidth={8} />
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#22d3ee" strokeWidth={8}
-          strokeDasharray={circ} strokeDashoffset={circ * (1 - progress)}
-          strokeLinecap="round" transform={"rotate(-90 " + size/2 + " " + size/2 + ")"}
-          style={{ transition:"stroke-dashoffset 1s linear" }} />
-        <text x={size/2} y={size/2 + 6} textAnchor="middle" fill="#22d3ee" fontSize="18" fontWeight="800">
-          {Math.round(progress * 100)}%
-        </text>
-      </svg>
-    </div>
-  );
-}
-function MandalaGraphic({ running }) {
-  const [rotation, setRotation] = useState(0);
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => setRotation(r => r + 1), 50);
-    return () => clearInterval(t);
-  }, [running]);
-  const angles = [0,45,90,135,180,225,270,315];
-  return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
-      <svg width={140} height={140} style={{ transform:"rotate(" + rotation + "deg)" }}>
-        {angles.map((angle, i) => (
-          <g key={i} transform={"rotate(" + angle + " 70 70)"}>
-            <ellipse cx={70} cy={35} rx={8} ry={20} fill={i % 2 === 0 ? "#7c5cfc80" : "#22d3ee40"} />
-          </g>
-        ))}
-        <circle cx={70} cy={70} r={20} fill="#22d3ee30" stroke="#22d3ee" strokeWidth={2} />
-        <circle cx={70} cy={70} r={8} fill="#7c5cfc" />
-      </svg>
-    </div>
-  );
-}
-function WavesGraphic({ running }) {
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => setTick(t => t + 1), 100);
-    return () => clearInterval(t);
-  }, [running]);
-  return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
-      <div style={{ position:"relative", width:140, height:140 }}>
-        {[0,1,2,3].map(i => (
-          <div key={i} style={{ position:"absolute", inset:i*18, borderRadius:"50%", border:"2px solid #4ade80", opacity:Math.max(0, 1-((tick*0.05+i*0.25)%1)), transition:"opacity 0.1s" }} />
-        ))}
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32 }}>🌱</div>
-      </div>
-    </div>
-  );
-}
-function HeartbeatGraphic({ running }) {
-  const [beat, setBeat] = useState(false);
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(() => { setBeat(true); setTimeout(() => setBeat(false), 200); }, 800);
-    return () => clearInterval(t);
-  }, [running]);
-  return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:160, marginBottom:16 }}>
-      <div style={{ transform:"scale(" + (beat ? 1.3 : 1) + ")", transition:"transform 0.15s ease", fontSize:80, filter:"drop-shadow(0 0 " + (beat ? 20 : 8) + "px #f87171)" }}>💪</div>
-    </div>
-  );
-}
-function MeditationGraphic({ sessionId, seconds, running }) {
-  const totalSeconds = [300, 600, 420, 180, 300][sessionId - 1] || 300;
-  if (sessionId === 1) return <BreathingCircle running={running} />;
-  if (sessionId === 2) return <CircularProgress seconds={seconds} totalSeconds={totalSeconds} />;
-  if (sessionId === 3) return <MandalaGraphic running={running} />;
-  if (sessionId === 4) return <WavesGraphic running={running} />;
-  if (sessionId === 5) return <HeartbeatGraphic running={running} />;
-  return null;
-}
 function PageMeditacion() {
   const [active, setActive] = useState(null);
   const [seconds, setSeconds] = useState(0);
@@ -703,7 +589,6 @@ function PageMeditacion() {
           <div style={{ fontSize: 48, marginBottom: 12 }}>{active.emoji}</div>
           <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{active.title}</h2>
           <p style={{ fontSize: 13, color: C.muted, marginBottom: 24 }}>{active.desc}</p>
-          <MeditationGraphic sessionId={active.id} seconds={seconds} running={running} />
           <div style={{ fontSize: 52, fontWeight: 800, color: C.primary, marginBottom: 8 }}>{fmt(seconds)}</div>
           <p style={{ color: C.muted, fontSize: 12, marginBottom: 24 }}>Respira. Estás en el lugar correcto.</p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -791,7 +676,7 @@ function PageApoyo({ contacts, helpLines }) {
 }
 
 // ─── PAGE: PERFIL ─────────────────────────────────────────────
-function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary }) {
+function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary, youtubePlaylist }) {
   const [name, setName] = useState(profile?.name || '');
   const [sobrietyDate, setSobrietyDate] = useState(profile?.sobriety_date || '');
   const [myContacts, setMyContacts] = useState(contacts?.length > 0 ? contacts : [{ name: '', phone: '', role: '' }, { name: '', phone: '', role: '' }]);
@@ -802,10 +687,8 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
     { nombre: 'Emergencias', numero: '112', descripcion: 'Emergencias generales', emoji: '🚨' },
   ]);
   const [myAnchors, setMyAnchors] = useState(anchors || []);
-  useEffect(() => { setMyAnchors(anchors || []); }, [anchors]);
   const [myBlackPhotos, setMyBlackPhotos] = useState(blackPhotos || []);
-  useEffect(() => { setMyBlackPhotos(blackPhotos || []); }, [blackPhotos]);
-  const [myPlaylist, setMyPlaylist] = useState(profile?.playlist || [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror - Michael Jackson', url:'https://www.youtube.com/watch?v=PivWY9wn5ps&list=RDPivWY9wn5ps&start_radio=1' }]);
+  const [myYt, setMyYt] = useState(youtubePlaylist || '');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
@@ -813,7 +696,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 
   const saveAll = async () => {
     setSaving(true);
-    await onSave({ name, sobrietyDate, contacts: myContacts, helpLines: myHelpLines, anchors: myAnchors, blackPhotos: myBlackPhotos, playlist: myPlaylist });
+    await onSave({ name, sobrietyDate, contacts: myContacts, helpLines: myHelpLines, anchors: myAnchors, blackPhotos: myBlackPhotos, yt: myYt });
     setSaving(false); setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -886,21 +769,11 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
         <button onClick={() => setMyHelpLines([...myHelpLines, { nombre: '', numero: '', descripcion: '', emoji: '📞' }])} style={{ width: '100%', padding: '10px 0', borderRadius: 12, background: 'none', border: `1px dashed ${C.border}`, color: C.muted, fontSize: 13, cursor: 'pointer' }}>+ Añadir teléfono</button>
       </div>
 
-      
-      <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>MI PLAYLIST ANTICRAVING</label>
-      <p style={{ fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 12 }}>Añade links de YouTube que te ayuden a no consumir</p>
-      <div style={{ marginBottom: 20 }}>
-        {myPlaylist.map((p, i) => (
-          <div key={i} style={{ display:'flex', gap:8, marginBottom:8 }}>
-            <input value={p.title} onChange={e => { const n=[...myPlaylist]; n[i].title=e.target.value; setMyPlaylist(n); }} placeholder="Nombre de la canción" style={{ flex:1, padding:'10px 12px', borderRadius:10, background:C.bg, border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:'none' }} />
-            <input value={p.url} onChange={e => { const n=[...myPlaylist]; n[i].url=e.target.value; setMyPlaylist(n); }} placeholder="Link de YouTube" style={{ flex:2, padding:'10px 12px', borderRadius:10, background:C.bg, border:`1px solid ${C.border}`, color:C.text, fontSize:13, outline:'none' }} />
-            <button onClick={() => setMyPlaylist(myPlaylist.filter((_,idx)=>idx!==i))} style={{ padding:'10px 12px', borderRadius:10, background:'none', border:`1px solid ${C.border}`, color:C.red, cursor:'pointer', fontSize:12 }}>✕</button>
-          </div>
-        ))}
-        <button onClick={() => setMyPlaylist([...myPlaylist, { title:'', url:'' }])} style={{ width:'100%', padding:'10px 0', borderRadius:12, background:'none', border:`1px dashed ${C.border}`, color:C.muted, fontSize:13, cursor:'pointer' }}>+ Añadir canción</button>
-      </div>
-
       <PhotoUploader photos={myAnchors} onAdd={p => setMyAnchors([...myAnchors, p])} onRemove={i => setMyAnchors(myAnchors.filter((_, idx) => idx !== i))} title="💙 Anclaje emocional" desc="Fotos de tus motivos para seguir" dark={false} />
+      <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>🎵 PLAYLIST ANTI-CRAVING</label>
+      <div style={{ fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 8 }}>Pega aquí el enlace a tu playlist de YouTube</div>
+      <input value={myYt} onChange={e => setMyYt(e.target.value)} placeholder="https://youtube.com/playlist?list=..." style={inputStyle} />
+      
       <PhotoUploader photos={myBlackPhotos} onAdd={p => setMyBlackPhotos([...myBlackPhotos, p])} onRemove={i => setMyBlackPhotos(myBlackPhotos.filter((_, idx) => idx !== i))} title="🖤 Foto negra" desc="Imágenes que te recuerdan el daño" dark={true} />
 
       <button onClick={saveAll} disabled={saving} style={{ width: '100%', padding: '16px 0', borderRadius: 16, background: saved ? `${C.green}30` : `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: saved ? `1px solid ${C.green}` : 'none', color: saved ? C.green : '#fff', fontWeight: 700, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
@@ -911,29 +784,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 }
 
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
-
-
-
-
-function NatureSounds({ playlist }) {
-  const musicLinks = playlist && playlist.length > 0 ? playlist : [{ title: 'Música calmada', url: 'https://www.youtube.com/watch?v=PivWY9wn5ps' }];
-  return (
-    <div style={{ marginTop:10 }}>
-      {musicLinks.map((p, i) => (
-        <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:8, textDecoration:'none' }}>
-          <div style={{ width:44, height:44, borderRadius:12, background:'#ff000020', border:'1px solid #ff000040', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🎵</div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>{p.title}</div>
-            <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Abrir en YouTube</div>
-          </div>
-        </a>
-      ))}
-    </div>
-  );
-}
-
-
-function PageDiario({ diary, onAdd, setPage, playlist }) {
+function PageDiario({ diary, onAdd, setPage }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -961,7 +812,6 @@ function PageDiario({ diary, onAdd, setPage, playlist }) {
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
       <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Diario</h1>
-      <p style={{ fontSize: 13, color: C.primary, fontStyle: "italic", lineHeight: 1.6, marginBottom: 16, padding: "12px 16px", background: C.primary + "10", borderRadius: 12, border: "1px solid " + C.primary + "30" }}>"Algún día contarás la historia de cómo saliste adelante y serás la guía de superación para otra persona."</p>
       <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>¿Cómo estás hoy? Escríbelo.</p>
 
       {/* Today entry */}
@@ -1007,23 +857,8 @@ function PageDiario({ diary, onAdd, setPage, playlist }) {
         </>
       )}
 
-      
-      <div style={{ marginTop:20 }}>
-        <div style={{ color:'#6b6b8a', fontSize:11, letterSpacing:'0.2em', fontWeight:600, marginBottom:12 }}>SONIDOS</div>
-        {(playlist && playlist.length > 0 ? playlist : [{ title:'Playlist anticraving', url:'https://www.youtube.com/watch?v=PivWY9wn5ps' }, { title:'Man in the Mirror', url:'https://www.youtube.com/watch?v=PivWY9wn5ps&list=RDPivWY9wn5ps&start_radio=1' }]).map((p, i) => (
-          <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:14, background:'#13131f', border:'1px solid #1e1e30', borderRadius:16, padding:'14px 16px', marginBottom:10, textDecoration:'none' }}>
-            <div style={{ width:44, height:44, borderRadius:12, background:'#ff000020', border:'1px solid #ff000040', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🎵</div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontSize:14, fontWeight:600, color:'#f0f0ff' }}>{p.title}</div>
-              <div style={{ fontSize:12, color:'#6b6b8a', marginTop:2 }}>Abrir en YouTube</div>
-            </div>
-          </a>
-        ))}
-        
-      </div>
-
       {/* Meditación shortcut */}
-      <button onClick={() => setPage("meditacion")} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
+      <button onClick={() => setPage('meditacion')} style={{ marginTop: 16, width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' }}>
         <div style={{ width: 44, height: 44, borderRadius: 12, background: `${C.cyan}15`, border: `1px solid ${C.cyan}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🧘</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Meditación matinal</div>
@@ -1075,8 +910,6 @@ function Achievements({ sobrietyDays, workouts, diary }) {
   );
 }
 
-
-function useNotifications(){useEffect(()=>{if(!("Notification" in window))return;if(Notification.permission==="default")Notification.requestPermission();const s=(h,m,t,b)=>{const now=new Date(),tg=new Date();tg.setHours(h,m,0,0);if(tg<=now)tg.setDate(tg.getDate()+1);const id=setTimeout(()=>{if(Notification.permission==="granted")new Notification(t,{body:b});s(h,m,t,b);},tg-now);return id;};const t1=s(8,0,"💙 Craving Health","Algún día contarás la historia de cómo saliste adelante y serás la guía de superación para otra persona.");const t2=s(17,0,"🏆 Craving Health","Cada tarde es una victoria más. Regístrala.");return()=>{clearTimeout(t1);clearTimeout(t2);};},[]); }
 // ─── APP ROOT ─────────────────────────────────────────────────
 export default function App() {
   const [user, setUser] = useState(null);
@@ -1090,8 +923,8 @@ export default function App() {
   const [anchors, setAnchors] = useState([]);
   const [blackPhotos, setBlackPhotos] = useState([]);
   const [diary, setDiary] = useState([]);
-  const [cravings, setCravings] = useState([]);
-  const [showCraving, setShowCraving] = useState(false);
+  const [toast, setToast] = useState('');
+  const [youtubePlaylist, setYoutubePlaylist] = useState('');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -1104,26 +937,53 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setProfile(null);
+      setAnchors([]);
+      setBlackPhotos([]);
+      setWorkouts([]);
+      setContacts([]);
+      setHelpLines([]);
+      setDiary([]);
+      return;
+    }
+    setAnchors([]);
+    setBlackPhotos([]);
     loadData();
   }, [user]);
 
+  useEffect(() => {
+    if (!user) return;
+    if (typeof Notification === 'undefined') return;
+    if (Notification.permission === 'default') {
+      const askedKey = 'notifAsked';
+      if (!localStorage.getItem(askedKey)) {
+        Notification.requestPermission();
+        localStorage.setItem(askedKey, '1');
+      }
+    }
+    const checkTime = () => {
+      const now = new Date();
+    };
+    checkTime();
+    const interval = setInterval(checkTime, 60000);
+    return () => clearInterval(interval);
+  }, [user, workouts]);
+
   const loadData = async () => {
     const uid = user.id;
-    const [{ data: prof }, { data: w }, { data: c }, { data: h }, { data: d }, { data: cr }] = await Promise.all([
+    const [{ data: prof }, { data: w }, { data: c }, { data: h }, { data: d }] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', uid).single(),
       supabase.from('workouts').select('*').eq('user_id', uid).order('date', { ascending: false }),
       supabase.from('contacts').select('*').eq('user_id', uid),
       supabase.from('help_lines').select('*').eq('user_id', uid),
       supabase.from('diary').select('*').eq('user_id', uid).order('date', { ascending: false }),
-      supabase.from('cravings').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
     ]);
-    if (prof) { setProfile(prof); try { setAnchors(JSON.parse(prof.anchors || '[]')); } catch(e) { setAnchors([]); } try { setBlackPhotos(JSON.parse(prof.black_photos || '[]')); } catch(e) { setBlackPhotos([]); } } else { await supabase.from('profiles').upsert({ id: uid, name: '', anchors: '[]', black_photos: '[]', playlist: '[]' }); setProfile({}); setAnchors([]); setBlackPhotos([]); }
+    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); setYoutubePlaylist(prof.youtube_playlist || ''); }
     if (w) setWorkouts(w);
     if (c) setContacts(c);
     if (h) setHelpLines(h);
     if (d) setDiary(d);
-    if (cr) setCravings(cr);
   };
 
   const addWorkout = async (data) => {
@@ -1131,8 +991,14 @@ export default function App() {
     if (w) setWorkouts(prev => [w, ...prev]);
   };
 
-  const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b, playlist: pl }) => {
-    const { error } = await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b), playlist: JSON.stringify(pl) }); if (error) console.error('Error guardando:', error);
+  const addColdShower = async () => {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const { data: w } = await supabase.from('workouts').insert({ date: today, minutes: 1, type: 'ducha', user_id: user.id }).select().single();
+    if (w) { setWorkouts(prev => [w, ...prev]); setToast('Ducha registrada'); setTimeout(() => setToast(''), 2000); }
+  };
+
+  const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b, yt }) => {
+    await supabase.from('profiles').upsert({ id: user.id, name, sobriety_date: sobrietyDate || null, anchors: JSON.stringify(a), black_photos: JSON.stringify(b), youtube_playlist: yt || null });
     await supabase.from('contacts').delete().eq('user_id', user.id);
     const validContacts = c.filter(x => x.name || x.phone);
     if (validContacts.length > 0) await supabase.from('contacts').insert(validContacts.map(x => ({ ...x, user_id: user.id })));
@@ -1144,12 +1010,9 @@ export default function App() {
     setHelpLines(validH);
     setAnchors(a);
     setBlackPhotos(b);
+    setYoutubePlaylist(yt || '');
   };
 
-  const addCraving = async (data) => {
-    const { data: cr } = await supabase.from('cravings').insert({ ...data, user_id: user.id }).select().single();
-    if (cr) setCravings(prev => [cr, ...prev]);
-  };
   const addDiary = async (data) => {
     const today = format(new Date(), 'yyyy-MM-dd');
     await supabase.from('diary').delete().eq('user_id', user.id).eq('date', today);
@@ -1175,22 +1038,32 @@ export default function App() {
   const sobrietyDays = profile?.sobriety_date ? differenceInDays(new Date(), new Date(profile.sobriety_date)) : 0;
 
   const pages = {
-    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} onCraving={() => setShowCraving(true)} sobrietyDays={sobrietyDays} workouts={workouts} diary={diary} cravings={cravings} />,
-    actividad: <PageActividad workouts={workouts} onAdd={addWorkout} />,
+    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} />,
+    actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
     meditacion: <PageMeditacion />,
-    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} playlist={profile?.playlist ? JSON.parse(profile.playlist) : []} />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
-    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} />,
+    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} />,
   };
 
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: ${C.bg}; } input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); } input::placeholder { color: ${C.muted}; } @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
-      {showCraving && <CravingModal onSave={addCraving} onClose={() => setShowCraving(false)} />}
-      {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} />}
+      {/* SOS flotante - solo en páginas distintas a home */}
+      {page !== 'home' && (
+        <button onClick={() => setShowSOS(true)} aria-label="SOS" style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)', right: 'calc(env(safe-area-inset-right, 0px) + 16px)', zIndex: 60, width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #f87171, #dc2626)', border: '2px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 900, fontSize: 14, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 8px 24px rgba(248,113,113,0.5), 0 0 0 5px rgba(248,113,113,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'sosPulse 2.4s ease-in-out infinite' }}>
+          SOS
+        </button>
+      )}
+      <style>{`@keyframes sosPulse { 0%,100% { box-shadow: 0 6px 20px rgba(248,113,113,0.45), 0 0 0 4px rgba(248,113,113,0.12); } 50% { box-shadow: 0 6px 24px rgba(248,113,113,0.65), 0 0 0 10px rgba(248,113,113,0.05); } }`}</style>
+      {toast && (
+        <div style={{ position: 'fixed', bottom: 90, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #7c5cfc, #22d3ee)', color: '#fff', padding: '12px 20px', borderRadius: 14, fontSize: 14, fontWeight: 600, boxShadow: '0 8px 24px rgba(124,92,252,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 18 }}>🚿</span>{toast}
+        </div>
+      )}
+      {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} youtubePlaylist={youtubePlaylist} setPage={setPage} />}
       {pages[page]}
       <BottomNav page={page} setPage={setPage} />
     </div>
   );
 }
-// force deploy
