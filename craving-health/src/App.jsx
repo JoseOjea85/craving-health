@@ -430,7 +430,6 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
         <h1 style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Craving Health</h1>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: 24, marginBottom: 24 }}>
-        <PulseCircle onSOS={onSOS} />
         <SOSEye onSOS={onSOS} />
       </div>
       {sobrietyDays > 0 && (
