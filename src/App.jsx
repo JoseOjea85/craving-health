@@ -895,6 +895,8 @@ function Achievements({ sobrietyDays, workouts, diary, lang }) {
     { id: 16, emoji: '🏔️', title: lang === 'en' ? 'Five years' : 'Cinco años', desc: lang === 'en' ? '1825 days sober' : '1825 días en abstinencia', unlocked: sobrietyDays >= 1825 },
     { id: 17, emoji: '🌌', title: lang === 'en' ? 'Ten years' : 'Diez años', desc: lang === 'en' ? '3650 days sober' : '3650 días en abstinencia', unlocked: sobrietyDays >= 3650 },
     { id: 18, emoji: '👑', title: lang === 'en' ? 'Fifteen years' : 'Quince años', desc: lang === 'en' ? '5475 days sober' : '5475 días en abstinencia', unlocked: sobrietyDays >= 5475 },
+    { id: 19, emoji: '🌠', title: lang === 'en' ? 'Twenty years' : 'Veinte años', desc: lang === 'en' ? '7300 days sober' : '7300 días en abstinencia', unlocked: sobrietyDays >= 7300 },
+    { id: 20, emoji: '⭐', title: lang === 'en' ? 'Twenty-five years' : 'Veinticinco años', desc: lang === 'en' ? '9125 days sober' : '9125 días en abstinencia', unlocked: sobrietyDays >= 9125 },
     { id: 7, emoji: '🏃', title: lang === 'en' ? 'On the move' : 'En movimiento', desc: lang === 'en' ? 'First workout' : 'Primera sesión de ejercicio', unlocked: workoutDays >= 1 },
     { id: 8, emoji: '⚡', title: lang === 'en' ? 'Consistent' : 'Constante', desc: lang === 'en' ? '7 workout days' : '7 días de ejercicio', unlocked: workoutDays >= 7 },
     { id: 9, emoji: '🧘', title: lang === 'en' ? 'Healthy mind' : 'Mente sana', desc: lang === 'en' ? '10 hours of exercise' : '10 horas de ejercicio total', unlocked: totalMin >= 600 },
