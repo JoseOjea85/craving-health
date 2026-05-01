@@ -624,7 +624,7 @@ function PageMeditacion() {
 }
 
 // ─── PAGE: APOYO ──────────────────────────────────────────────
-function PageApoyo({ contacts, helpLines }) {
+function PageApoyo({ contacts, helpLines, lang }) {
   const DEFAULT_TELEFONOS = [
     { nombre: 'Teléfono de la Esperanza', numero: '717 003 717', descripcion: 'Crisis emocional · 24h', emoji: '🆘' },
     { nombre: 'Alcohólicos Anónimos', numero: '900 200 525', descripcion: 'Apoyo en adicción al alcohol', emoji: '🤝' },
@@ -800,11 +800,11 @@ function PageDiario({ diary, onAdd, setPage }) {
   const todayEntry = diary.find(d => d.date === today);
 
   const MOODS = [
-    { v: 1, emoji: '😔', label: 'Muy mal' },
-    { v: 2, emoji: '😟', label: 'Mal' },
-    { v: 3, emoji: '😐', label: 'Regular' },
-    { v: 4, emoji: '🙂', label: 'Bien' },
-    { v: 5, emoji: '😊', label: 'Muy bien' },
+    { v: 1, emoji: '😔', label: lang === 'en' ? 'Very bad' : 'Muy mal' },
+    { v: 2, emoji: '😟', label: lang === 'en' ? 'Bad' : 'Mal' },
+    { v: 3, emoji: '😐', label: lang === 'en' ? 'OK' : 'Regular' },
+    { v: 4, emoji: '🙂', label: lang === 'en' ? 'Good' : 'Bien' },
+    { v: 5, emoji: '😊', label: lang === 'en' ? 'Very good' : 'Muy bien' },
   ];
 
   const submit = async () => {
@@ -842,7 +842,7 @@ function PageDiario({ diary, onAdd, setPage }) {
         <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Escribe cómo te sientes, qué ha pasado hoy, qué te preocupa..." rows={4} style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 14, outline: 'none', resize: 'none', fontFamily: 'inherit', marginBottom: 12 }} />
 
         <button onClick={submit} disabled={saving} style={{ width: '100%', padding: '13px 0', borderRadius: 14, background: saved ? `${C.green}30` : `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: saved ? `1px solid ${C.green}` : 'none', color: saved ? C.green : '#fff', fontWeight: 700, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          {saving ? <Loader2 size={18} /> : saved ? <><Check size={18} /> Guardado</> : 'Guardar entrada'}
+          {saving ? <Loader2 size={18} /> : saved ? <><Check size={18} /> {lang === 'en' ? 'Saved' : 'Guardado'}</> : lang === 'en' ? 'Save entry' : 'Guardar entrada'}
         </button>
       </div>
 
@@ -1050,7 +1050,7 @@ export default function App() {
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} />,
     diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
     meditacion: <PageMeditacion />,
-    apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
+    apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} lang={lang} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} lang={lang} />,
   };
 
