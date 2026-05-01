@@ -444,7 +444,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
           <div style={{ fontSize: 40 }}>🏆</div>
           <div>
             <div style={{ fontSize: 36, fontWeight: 900, color: C.green, lineHeight: 1 }}>{sobrietyDays}</div>
-            <div style={{ fontSize: 13, color: C.muted, marginTop: 2 }}>días en abstinencia</div>
+            <div style={{ fontSize: 13, color: C.muted, marginTop: 2 }}>{lang === 'en' ? 'days sober' : 'días en abstinencia'}</div>
           </div>
           <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
             <div style={{ fontSize: 11, color: C.muted }}>Desde</div>
@@ -523,7 +523,7 @@ function PageActividad({ workouts, onAdd, onColdShower, lang }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800 }}>{lang === 'en' ? 'Your activity' : 'Tu actividad'}</h1>
-          <p style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>El cuerpo cura. Muévete cada día.</p>
+          <p style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{lang === 'en' ? 'The body heals. Move every day.' : 'El cuerpo cura. Muévete cada día.'}</p>
         </div>
         <button onClick={() => setShowLog(true)} style={{ width: 40, height: 40, borderRadius: '50%', background: `${C.primary}20`, border: `1px solid ${C.primary}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: C.primary }}>
           <Plus size={20} />
@@ -540,8 +540,8 @@ function PageActividad({ workouts, onAdd, onColdShower, lang }) {
       <button onClick={onColdShower} style={{ width: '100%', padding: '14px 16px', borderRadius: 16, background: `linear-gradient(135deg, ${C.cyan}25, ${C.primary}15)`, border: `1px solid ${C.cyan}40`, color: C.text, fontWeight: 600, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
         <div style={{ width: 44, height: 44, borderRadius: 12, background: `${C.cyan}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🚿</div>
         <div style={{ textAlign: 'left', flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700 }}>Ducha fría</div>
-          <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>Toca para registrar que la has hecho</div>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>{lang === 'en' ? 'Cold shower' : 'Ducha fría'}</div>
+          <div style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>{lang === 'en' ? 'Tap to log it' : 'Toca para registrar que la has hecho'}</div>
         </div>
         <Check size={18} color={C.cyan} />
       </button>
@@ -634,17 +634,17 @@ function PageApoyo({ contacts, helpLines, lang }) {
   const telefonos = helpLines?.length > 0 ? helpLines : DEFAULT_TELEFONOS;
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Apoyo</h1>
-      <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>No estás solo. Siempre hay alguien aquí.</p>
+      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>{lang === 'en' ? 'Support' : 'Apoyo'}</h1>
+      <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>{lang === 'en' ? "You're not alone. Someone is always here." : 'No estás solo. Siempre hay alguien aquí.'}</p>
       <div style={{ background: `linear-gradient(135deg, ${C.primary}25, ${C.cyan}10)`, border: `1px solid ${C.primary}40`, borderRadius: 20, padding: 20, marginBottom: 24, textAlign: 'center' }}>
         <div style={{ fontSize: 32, marginBottom: 8 }}>💙</div>
-        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>¿Momento difícil ahora?</div>
-        <div style={{ fontSize: 13, color: C.muted, marginBottom: 16 }}>Llama. Un humano real coge el teléfono.</div>
+        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{lang === 'en' ? 'Tough moment right now?' : '¿Momento difícil ahora?'}</div>
+        <div style={{ fontSize: 13, color: C.muted, marginBottom: 16 }}>{lang === 'en' ? 'Call. A real human picks up.' : 'Llama. Un humano real coge el teléfono.'}</div>
         <a href="tel:717003717" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: 14, background: `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, color: '#fff', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>📞 Llamar ahora</a>
       </div>
       {contacts?.filter(c => c.name && c.phone).length > 0 && (
         <>
-          <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>MIS CONTACTOS</p>
+          <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{lang === 'en' ? 'MY CONTACTS' : 'MIS CONTACTOS'}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
             {contacts.filter(c => c.name && c.phone).map((c, i) => (
               <a key={i} href={`tel:${c.phone.replace(/\s/g,'')}`} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
@@ -662,7 +662,7 @@ function PageApoyo({ contacts, helpLines, lang }) {
           </div>
         </>
       )}
-      <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>TELÉFONOS DE AYUDA</p>
+      <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{lang === 'en' ? 'HELP LINES' : 'TELÉFONOS DE AYUDA'}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {telefonos.map((t, i) => (
           <a key={i} href={`tel:${t.numero.replace(/\s/g,'')}`} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
@@ -716,7 +716,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
             {name ? name[0].toUpperCase() : '👤'}
           </div>
           <h1 style={{ fontSize: 18, fontWeight: 800 }}>{name || 'Tu perfil'}</h1>
-          {sobrietyDays !== null && <p style={{ fontSize: 13, color: C.green, marginTop: 4, fontWeight: 600 }}>🏆 {sobrietyDays} días limpio/a</p>}
+          {sobrietyDays !== null && <p style={{ fontSize: 13, color: C.green, marginTop: 4, fontWeight: 600 }}>🏆 {sobrietyDays} {lang === 'en' ? 'days clean' : 'días limpio/a'}</p>}
         </div>
         <button onClick={onLogout} style={{ background: 'none', border: `1px solid ${C.border}`, borderRadius: 10, padding: '8px 12px', color: C.muted, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
           <LogOut size={14} /> Salir
@@ -742,7 +742,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
       {sobrietyDays !== null && (
         <div style={{ background: `${C.green}15`, border: `1px solid ${C.green}30`, borderRadius: 12, padding: '12px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Trophy size={20} color={C.green} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: C.green }}>{sobrietyDays} días limpio/a 🎉</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: C.green }}>{sobrietyDays} {lang === 'en' ? 'days clean' : 'días limpio/a'} 🎉</span>
         </div>
       )}
 
@@ -756,16 +756,16 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
             <input value={c.role} onChange={e => { const n=[...myContacts]; n[i].role=e.target.value; setMyContacts(n); }} placeholder="Rol (terapeuta, familiar...)" style={{ ...inputStyle, marginBottom: 0 }} />
           </div>
         ))}
-        <button onClick={() => setMyContacts([...myContacts, { name: '', phone: '', role: '' }])} style={{ width: '100%', padding: '10px 0', borderRadius: 12, background: 'none', border: `1px dashed ${C.border}`, color: C.muted, fontSize: 13, cursor: 'pointer' }}>+ Añadir contacto</button>
+        <button onClick={() => setMyContacts([...myContacts, { name: '', phone: '', role: '' }])} style={{ width: '100%', padding: '10px 0', borderRadius: 12, background: 'none', border: `1px dashed ${C.border}`, color: C.muted, fontSize: 13, cursor: 'pointer' }}>+ {lang === 'en' ? 'Add contact' : 'Añadir contacto'}</button>
       </div>
 
-      <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>TELÉFONOS DE AYUDA</label>
+      <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>{lang === 'en' ? 'HELP LINES' : 'TELÉFONOS DE AYUDA'}</label>
       <div style={{ marginTop: 8, marginBottom: 20 }}>
         {myHelpLines.map((t, i) => (
           <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={{ fontSize: 12, color: C.muted, fontWeight: 600 }}>Teléfono {i + 1}</span>
-              <button onClick={() => setMyHelpLines(myHelpLines.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: C.red, cursor: 'pointer', fontSize: 12 }}>Eliminar</button>
+              <button onClick={() => setMyHelpLines(myHelpLines.filter((_, idx) => idx !== i))} style={{ background: 'none', border: 'none', color: C.red, cursor: 'pointer', fontSize: 12 }}>{lang === 'en' ? 'Delete' : 'Eliminar'}</button>
             </div>
             <input value={t.nombre} onChange={e => { const n=[...myHelpLines]; n[i].nombre=e.target.value; setMyHelpLines(n); }} placeholder="Nombre" style={{ ...inputStyle, marginBottom: 8 }} />
             <input value={t.numero} onChange={e => { const n=[...myHelpLines]; n[i].numero=e.target.value; setMyHelpLines(n); }} placeholder="Número" style={{ ...inputStyle, marginBottom: 8 }} />
@@ -818,8 +818,8 @@ function PageDiario({ diary, onAdd, setPage, lang }) {
 
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Diario</h1>
-      <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>¿Cómo estás hoy? Escríbelo.</p>
+      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>{lang === 'en' ? 'Journal' : 'Diario'}</h1>
+      <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>{lang === 'en' ? 'How are you today? Write it.' : '¿Cómo estás hoy? Escríbelo.'}</p>
 
       {/* Today entry */}
       <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 20, padding: 20, marginBottom: 20 }}>
@@ -827,7 +827,7 @@ function PageDiario({ diary, onAdd, setPage, lang }) {
 
         {/* Mood selector */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 12, color: C.muted, marginBottom: 10 }}>¿Cómo te sientes?</div>
+          <div style={{ fontSize: 12, color: C.muted, marginBottom: 10 }}>{lang === 'en' ? 'How do you feel?' : '¿Cómo te sientes?'}</div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
             {MOODS.map(m => (
               <button key={m.v} onClick={() => setMood(m.v)} style={{ flex: 1, padding: '10px 0', borderRadius: 12, border: `1px solid ${mood === m.v ? C.primary : C.border}`, background: mood === m.v ? `${C.primary}20` : 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
@@ -849,7 +849,7 @@ function PageDiario({ diary, onAdd, setPage, lang }) {
       {/* Past entries */}
       {diary.filter(d => d.date !== today).length > 0 && (
         <>
-          <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>ENTRADAS ANTERIORES</div>
+          <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{lang === 'en' ? 'PREVIOUS ENTRIES' : 'ENTRADAS ANTERIORES'}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {diary.filter(d => d.date !== today).slice(0, 10).map((d, i) => (
               <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px' }}>
