@@ -103,10 +103,6 @@ function BottomNav({ page, setPage, lang, setLang }) {
           <span style={{ fontSize: 10, fontWeight: page === id ? 600 : 400 }}>{label}</span>
         </button>
       ))}
-      <button onClick={() => { const nl = lang === 'es' ? 'en' : 'es'; setLang(nl); localStorage.setItem('lang', nl); }} style={{ padding: '10px 8px 8px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, color: C.muted }}>
-        <span style={{ fontSize: 16 }}>{lang === 'es' ? '🇬🇧' : '🇪🇸'}</span>
-        <span style={{ fontSize: 10 }}>{lang === 'es' ? 'EN' : 'ES'}</span>
-      </button>
     </div>
   );
 }
@@ -1067,6 +1063,10 @@ export default function App() {
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: ${C.bg}; } input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); } input::placeholder { color: ${C.muted}; } @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
       {/* SOS flotante - solo en páginas distintas a home */}
       {page !== 'home' && (
+        <button onClick={() => { const nl = lang === 'es' ? 'en' : 'es'; setLang(nl); localStorage.setItem('lang', nl); }} style={{ position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', left: 'calc(env(safe-area-inset-left, 0px) + 12px)', zIndex: 60, padding: '6px 12px', borderRadius: 20, background: 'rgba(20,20,30,0.85)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span>{lang === 'es' ? '🇬🇧' : '🇪🇸'}</span>
+          <span>{lang === 'es' ? 'EN' : 'ES'}</span>
+        </button>
         <button onClick={() => setShowSOS(true)} aria-label="SOS" style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)', right: 'calc(env(safe-area-inset-right, 0px) + 16px)', zIndex: 60, width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #f87171, #dc2626)', border: '2px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 900, fontSize: 14, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 8px 24px rgba(248,113,113,0.5), 0 0 0 5px rgba(248,113,113,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'sosPulse 2.4s ease-in-out infinite' }}>
           SOS
         </button>
