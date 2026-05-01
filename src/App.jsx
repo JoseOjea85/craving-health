@@ -331,7 +331,7 @@ function PhotoUploader({ photos, onAdd, onRemove, title, desc, dark }) {
 }
 
 // ─── WEEK CHART ───────────────────────────────────────────────
-function WeekChart({ workouts, goal }) {
+function WeekChart({ workouts, goal, lang }) {
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = subDays(new Date(), 6 - i);
     const key = format(date, 'yyyy-MM-dd');
@@ -475,7 +475,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
           <div style={{ fontSize: 36 }}>🌍</div>
           <div>
             <div style={{ fontSize: 28, fontWeight: 900, color: C.primary, lineHeight: 1 }}>{userCount}</div>
-            <div style={{ fontSize: 13, color: C.muted, marginTop: 2 }}>{userCount === 1 ? 'persona en la comunidad' : 'personas en la comunidad'}</div>
+            <div style={{ fontSize: 13, color: C.muted, marginTop: 2 }}>{userCount === 1 ? 'person in the community' : 'people in the community'}</div>
           </div>
           <div style={{ marginLeft: 'auto', fontSize: 12, color: C.muted, textAlign: 'right', maxWidth: 100 }}>
             Nadie lucha solo
@@ -486,11 +486,11 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
       <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{getLang() === 'en' ? 'QUICK ACCESS' : 'ACCESO RÁPIDO'}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {[
-          { icon: '🏃', title: 'Registrar actividad', sub: 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary },
-          { icon: '🧘', title: 'Meditación matinal', sub: 'Empieza el día con calma', page: 'meditacion', color: C.cyan },
-          { icon: '🚿', title: 'Ducha fría', sub: 'Registrar que la has hecho', action: 'coldShower', color: C.cyan },
-          { icon: '🎵', title: 'Mi música anti-craving', sub: youtubePlaylist ? 'Abrir playlist de YouTube' : 'Configura tu playlist en Perfil', action: 'youtube', color: '#ef4444' },
-          { icon: '💙', title: 'Necesito apoyo', sub: 'Teléfonos y recursos', page: 'apoyo', color: C.green },
+          { icon: '🏃', title: lang === 'en' ? 'Log activity' : 'Registrar actividad', sub: lang === 'en' ? 'Add today\'s workout' : 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary },
+          { icon: '🧘', title: lang === 'en' ? 'Morning meditation' : 'Meditación matinal', sub: lang === 'en' ? 'Start the day with calm' : 'Empieza el día con calma', page: 'meditacion', color: C.cyan },
+          { icon: '🚿', title: lang === 'en' ? 'Cold shower' : 'Ducha fría', sub: lang === 'en' ? 'Tap to log it' : 'Registrar que la has hecho', action: 'coldShower', color: C.cyan },
+          { icon: '🎵', title: lang === 'en' ? 'Anti-craving music' : 'Mi música anti-craving', sub: lang === 'en' ? (youtubePlaylist ? 'Open YouTube playlist' : 'Set up in Profile') : (youtubePlaylist ? 'Abrir playlist de YouTube' : 'Configura tu playlist en Perfil'), action: 'youtube', color: '#ef4444' },
+          { icon: '💙', title: lang === 'en' ? 'I need support' : 'Necesito apoyo', sub: lang === 'en' ? 'Phones and resources' : 'Teléfonos y recursos', page: 'apoyo', color: C.green },
         ].map(item => (
           <button key={item.page || item.action} onClick={() => { if (item.action === 'coldShower') onColdShower(); else if (item.action === 'youtube') { if (youtubePlaylist) window.open(youtubePlaylist, '_blank'); else setPage('perfil'); } else setPage(item.page); }} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', width: '100%', textAlign: 'left' }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: `${item.color}15`, border: `1px solid ${item.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{item.icon}</div>
@@ -530,7 +530,7 @@ function PageActividad({ workouts, onAdd, onColdShower, lang }) {
         </button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
-        {[{ v: todayMin, l: 'Hoy (min)' }, { v: streak, l: 'Racha', icon: <Flame size={18} color={C.orange} /> }, { v: Math.round(totalMin / 60), l: 'Total (h)' }].map((s, i) => (
+        {[{ v: todayMin, l: lang === 'en' ? 'Today (min)' : 'Hoy (min)' }, { v: streak, l: lang === 'en' ? 'Streak' : 'Racha', icon: <Flame size={18} color={C.orange} /> }, { v: Math.round(totalMin / 60), l: lang === 'en' ? 'Total (h)' : 'Total (h)' }].map((s, i) => (
           <div key={i} style={{ background: i === 1 ? 'linear-gradient(135deg, rgba(251,146,60,0.15), rgba(239,68,68,0.05))' : C.card, border: `1px solid ${i === 1 ? 'rgba(251,146,60,0.25)' : C.border}`, borderRadius: 16, padding: '16px 8px', textAlign: 'center' }}>
             <div style={{ fontSize: 28, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>{s.icon}{s.v}</div>
             <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{s.l}</div>
@@ -545,7 +545,7 @@ function PageActividad({ workouts, onAdd, onColdShower, lang }) {
         </div>
         <Check size={18} color={C.cyan} />
       </button>
-      <WeekChart workouts={workouts} goal={30} />
+      <WeekChart workouts={workouts} goal={30} lang={lang} />
       {workouts.filter(w => w.date === today).length > 0 && (
         <div style={{ marginBottom: 16 }}>
           <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.25em', fontWeight: 600, marginBottom: 12 }}>HOY</div>
