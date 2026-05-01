@@ -181,10 +181,10 @@ function SOSEye({ onSOS }) {
         <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: `1px solid ${color}35`, animation: 'pulseRing 1.8s ease-out infinite' }} />
         <div style={{ position: 'absolute', inset: -20, borderRadius: '50%', border: `1px solid ${color}20`, animation: 'pulseRing 1.8s ease-out infinite 0.5s' }} />
         <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: '0.08em', lineHeight: 1 }}>SOS</div>
-        <div style={{ fontSize: 10, opacity: 0.85, marginTop: 6, letterSpacing: '0.15em', fontWeight: 600 }}>{lang === 'en' ? 'HELP NOW' : 'AYUDA AHORA'}</div>
+        <div style={{ fontSize: 10, opacity: 0.85, marginTop: 6, letterSpacing: '0.15em', fontWeight: 600 }}>AYUDA AHORA</div>
       </button>
       <div style={{ marginTop: 10, fontSize: 11, color: '#6b6b8a', letterSpacing: '0.1em' }}>
-        {lang === 'en' ? 'TAP IF YOU NEED IT' : 'TOCA SI LO NECESITAS'}
+        TOCA SI LO NECESITAS
       </div>
     </div>
   );
@@ -298,7 +298,7 @@ function SOSModal({ onClose, anchors, blackPhotos, contacts, youtubePlaylist, se
 }
 
 // ─── PHOTO UPLOADER ───────────────────────────────────────────
-function PhotoUploader({ photos, onAdd, onRemove, title, desc, dark, lang }) {
+function PhotoUploader({ photos, onAdd, onRemove, title, desc, dark }) {
   const inputRef = useRef();
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -321,7 +321,7 @@ function PhotoUploader({ photos, onAdd, onRemove, title, desc, dark, lang }) {
         ))}
         {photos.length < 9 && (
           <button onClick={() => inputRef.current.click()} style={{ aspectRatio: '1', borderRadius: 12, border: `2px dashed ${dark ? '#333' : C.border}`, background: 'none', color: dark ? '#555' : C.muted, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, fontSize: 11 }}>
-            <Camera size={20} /><span>{lang === 'en' ? 'Add' : 'Añadir'}</span>
+            <Camera size={20} /><span>Añadir</span>
           </button>
         )}
       </div>
@@ -447,7 +447,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
             <div style={{ fontSize: 13, color: C.muted, marginTop: 2 }}>{lang === 'en' ? 'days sober' : 'días en abstinencia'}</div>
           </div>
           <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: C.muted }}>{lang === 'en' ? 'Since' : 'Desde'}</div>
+            <div style={{ fontSize: 11, color: C.muted }}>Desde</div>
             <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{format(new Date(profile.sobriety_date), 'dd/MM/yyyy')}</div>
           </div>
         </div>
@@ -719,7 +719,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
           {sobrietyDays !== null && <p style={{ fontSize: 13, color: C.green, marginTop: 4, fontWeight: 600 }}>🏆 {sobrietyDays} {lang === 'en' ? 'days clean' : 'días limpio/a'}</p>}
         </div>
         <button onClick={onLogout} style={{ background: 'none', border: `1px solid ${C.border}`, borderRadius: 10, padding: '8px 12px', color: C.muted, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-          <LogOut size={14} /> {lang === 'en' ? 'Sign out' : 'Salir'}
+          <LogOut size={14} /> Salir
         </button>
       </div>
 
@@ -776,12 +776,12 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
         <button onClick={() => setMyHelpLines([...myHelpLines, { nombre: '', numero: '', descripcion: '', emoji: '📞' }])} style={{ width: '100%', padding: '10px 0', borderRadius: 12, background: 'none', border: `1px dashed ${C.border}`, color: C.muted, fontSize: 13, cursor: 'pointer' }}>+ Añadir teléfono</button>
       </div>
 
-      <PhotoUploader photos={myAnchors} onAdd={p => setMyAnchors([...myAnchors, p])} onRemove={i => setMyAnchors(myAnchors.filter((_, idx) => idx !== i))} lang={lang} title={lang === "en" ? "💙 Emotional anchor" : "💙 Anclaje emocional"} desc={lang === "en" ? "Photos of your reasons" : "Fotos de tus motivos para seguir"} dark={false} />
+      <PhotoUploader photos={myAnchors} onAdd={p => setMyAnchors([...myAnchors, p])} onRemove={i => setMyAnchors(myAnchors.filter((_, idx) => idx !== i))} title="💙 Anclaje emocional" desc="Fotos de tus motivos para seguir" dark={false} />
       <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>🎵 PLAYLIST ANTI-CRAVING</label>
       <div style={{ fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 8 }}>Pega aquí el enlace a tu playlist de YouTube</div>
       <input value={myYt} onChange={e => setMyYt(e.target.value)} placeholder="https://youtube.com/playlist?list=..." style={inputStyle} />
       
-      <PhotoUploader photos={myBlackPhotos} onAdd={p => setMyBlackPhotos([...myBlackPhotos, p])} onRemove={i => setMyBlackPhotos(myBlackPhotos.filter((_, idx) => idx !== i))} lang={lang} title={lang === "en" ? "🖤 Black photo" : "🖤 Foto negra"} desc={lang === "en" ? "Images that remind you of the damage" : "Imágenes que te recuerdan el daño"} dark={true} />
+      <PhotoUploader photos={myBlackPhotos} onAdd={p => setMyBlackPhotos([...myBlackPhotos, p])} onRemove={i => setMyBlackPhotos(myBlackPhotos.filter((_, idx) => idx !== i))} title="🖤 Foto negra" desc="Imágenes que te recuerdan el daño" dark={true} />
 
       <button onClick={saveAll} disabled={saving} style={{ width: '100%', padding: '16px 0', borderRadius: 16, background: saved ? `${C.green}30` : `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: saved ? `1px solid ${C.green}` : 'none', color: saved ? C.green : '#fff', fontWeight: 700, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
         {saving ? <Loader2 size={20} /> : saved ? <><Check size={20} /> {lang === 'en' ? 'Saved' : 'Guardado'}</> : lang === 'en' ? 'Save profile' : 'Guardar perfil'}
