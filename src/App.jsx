@@ -791,7 +791,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 }
 
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
-function PageDiario({ diary, onAdd, setPage }) {
+function PageDiario({ diary, onAdd, setPage, lang }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -1048,7 +1048,7 @@ export default function App() {
   const pages = {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} lang={lang} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} />,
-    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} lang={lang} />,
     meditacion: <PageMeditacion />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} lang={lang} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} lang={lang} />,
