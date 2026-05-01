@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Flame, Plus, X, Check, Brain, Heart, Phone, User, Home, Activity, ChevronRight, Loader2, Camera, Play, Pause, Trophy, LogOut, BookOpen, Star } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
 import { supabase } from './supabase';
+import { t } from './i18n';
 
 const C = {
   bg: '#0d0d14', card: '#13131f', border: '#1e1e30',
@@ -84,13 +85,13 @@ function AuthPage({ onAuth }) {
 }
 
 // ─── BOTTOM NAV ───────────────────────────────────────────────
-function BottomNav({ page, setPage }) {
+function BottomNav({ page, setPage, lang, setLang }) {
   const items = [
-    { id: 'home', icon: Home, label: 'Inicio' },
-    { id: 'actividad', icon: Activity, label: 'Actividad' },
-    { id: 'diario', icon: BookOpen, label: 'Diario' },
-    { id: 'apoyo', icon: Heart, label: 'Apoyo' },
-    { id: 'perfil', icon: User, label: 'Perfil' },
+    { id: 'home', icon: Home, label: lang === 'en' ? 'Home' : 'Inicio' },
+    { id: 'actividad', icon: Activity, label: lang === 'en' ? 'Activity' : 'Actividad' },
+    { id: 'diario', icon: BookOpen, label: lang === 'en' ? 'Journal' : 'Diario' },
+    { id: 'apoyo', icon: Heart, label: lang === 'en' ? 'Support' : 'Apoyo' },
+    { id: 'perfil', icon: User, label: lang === 'en' ? 'Profile' : 'Perfil' },
   ];
   return (
     <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.card, borderTop: `1px solid ${C.border}`, display: 'flex', zIndex: 30 }}>
@@ -100,6 +101,10 @@ function BottomNav({ page, setPage }) {
           <span style={{ fontSize: 10, fontWeight: page === id ? 600 : 400 }}>{label}</span>
         </button>
       ))}
+      <button onClick={() => { const nl = lang === 'es' ? 'en' : 'es'; setLang(nl); localStorage.setItem('lang', nl); }} style={{ padding: '10px 8px 8px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, color: C.muted }}>
+        <span style={{ fontSize: 16 }}>{lang === 'es' ? '🇬🇧' : '🇪🇸'}</span>
+        <span style={{ fontSize: 10 }}>{lang === 'es' ? 'EN' : 'ES'}</span>
+      </button>
     </div>
   );
 }
@@ -422,7 +427,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
     return count;
   })();
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Buenos días' : hour < 20 ? 'Buenas tardes' : 'Buenas noches';
+  const greeting = hour < 12 ? (lang === 'en' ? 'Good morning' : 'Buenos días') : hour < 20 ? (lang === 'en' ? 'Good afternoon' : 'Buenas tardes') : (lang === 'en' ? 'Good evening' : 'Buenas noches');
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
       <div style={{ marginBottom: 24 }}>
@@ -453,11 +458,11 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
         <div style={{ background: `linear-gradient(135deg, ${C.primary}30, ${C.cyan}15)`, border: `1px solid ${C.primary}30`, borderRadius: 20, padding: 20 }}>
           <div style={{ fontSize: 36, fontWeight: 800 }}>{todayMin}<span style={{ fontSize: 14, color: C.muted, fontWeight: 400 }}> min</span></div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>Actividad hoy</div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{lang === 'en' ? "Today's activity" : 'Actividad hoy'}</div>
         </div>
         <div style={{ background: 'linear-gradient(135deg, rgba(251,146,60,0.2), rgba(239,68,68,0.05))', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 20, padding: 20 }}>
           <div style={{ fontSize: 36, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}><Flame size={28} color={C.orange} />{streak}</div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>Días activo</div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{lang === 'en' ? 'Active days' : 'Días activo'}</div>
         </div>
       </div>
       <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} />
@@ -476,7 +481,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
         </div>
       )}
 
-      <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>ACCESO RÁPIDO</p>
+      <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{lang === 'en' ? 'QUICK ACCESS' : 'ACCESO RÁPIDO'}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {[
           { icon: '🏃', title: 'Registrar actividad', sub: 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary },
@@ -924,7 +929,8 @@ export default function App() {
   const [blackPhotos, setBlackPhotos] = useState([]);
   const [diary, setDiary] = useState([]);
   const [toast, setToast] = useState('');
-  const [youtubePlaylist, setYoutubePlaylist] = useState('');
+  const [youtubePlaylist, setYoutubePlaylist] = useState('')
+  const [lang, setLang] = useState(localStorage.getItem('lang') || 'es');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -994,7 +1000,7 @@ export default function App() {
   const addColdShower = async () => {
     const today = format(new Date(), 'yyyy-MM-dd');
     const { data: w } = await supabase.from('workouts').insert({ date: today, minutes: 1, type: 'ducha', user_id: user.id }).select().single();
-    if (w) { setWorkouts(prev => [w, ...prev]); setToast('Ducha registrada'); setTimeout(() => setToast(''), 2000); }
+    if (w) { setWorkouts(prev => [w, ...prev]); setToast(lang === 'en' ? 'Shower logged' : 'Ducha registrada'); setTimeout(() => setToast(''), 2000); }
   };
 
   const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b, yt }) => {
@@ -1063,7 +1069,7 @@ export default function App() {
       )}
       {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} youtubePlaylist={youtubePlaylist} setPage={setPage} />}
       {pages[page]}
-      <BottomNav page={page} setPage={setPage} />
+      <BottomNav page={page} setPage={setPage} lang={lang} setLang={setLang} />
     </div>
   );
 }
