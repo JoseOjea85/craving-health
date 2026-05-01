@@ -10,6 +10,8 @@ const C = {
   green: '#4ade80', red: '#f87171', text: '#f0f0ff', muted: '#6b6b8a',
 };
 
+const getLang = () => localStorage.getItem('lang') || 'es';
+
 const WORKOUT_ICONS = { caminar:'🚶', correr:'🏃', gimnasio:'🏋️', yoga:'🧘', ciclismo:'🚴', ducha:'🚿', otro:'⚡' };
 
 const inputStyle = { width: '100%', padding: '12px 14px', borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 14, outline: 'none', marginBottom: 12 };
@@ -427,7 +429,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
     return count;
   })();
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? (lang === 'en' ? 'Good morning' : 'Buenos días') : hour < 20 ? (lang === 'en' ? 'Good afternoon' : 'Buenas tardes') : (lang === 'en' ? 'Good evening' : 'Buenas noches');
+  const greeting = hour < 12 ? (getLang() === 'en' ? 'Good morning' : 'Buenos días') : hour < 20 ? (getLang() === 'en' ? 'Good afternoon' : 'Buenas tardes') : (getLang() === 'en' ? 'Good evening' : 'Buenas noches');
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
       <div style={{ marginBottom: 24 }}>
@@ -458,11 +460,11 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
         <div style={{ background: `linear-gradient(135deg, ${C.primary}30, ${C.cyan}15)`, border: `1px solid ${C.primary}30`, borderRadius: 20, padding: 20 }}>
           <div style={{ fontSize: 36, fontWeight: 800 }}>{todayMin}<span style={{ fontSize: 14, color: C.muted, fontWeight: 400 }}> min</span></div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{lang === 'en' ? "Today's activity" : 'Actividad hoy'}</div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{getLang() === 'en' ? "Today's activity" : 'Actividad hoy'}</div>
         </div>
         <div style={{ background: 'linear-gradient(135deg, rgba(251,146,60,0.2), rgba(239,68,68,0.05))', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 20, padding: 20 }}>
           <div style={{ fontSize: 36, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}><Flame size={28} color={C.orange} />{streak}</div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{lang === 'en' ? 'Active days' : 'Días activo'}</div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{getLang() === 'en' ? 'Active days' : 'Días activo'}</div>
         </div>
       </div>
       <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} />
@@ -481,7 +483,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
         </div>
       )}
 
-      <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{lang === 'en' ? 'QUICK ACCESS' : 'ACCESO RÁPIDO'}</p>
+      <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{getLang() === 'en' ? 'QUICK ACCESS' : 'ACCESO RÁPIDO'}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {[
           { icon: '🏃', title: 'Registrar actividad', sub: 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary },
@@ -1000,7 +1002,7 @@ export default function App() {
   const addColdShower = async () => {
     const today = format(new Date(), 'yyyy-MM-dd');
     const { data: w } = await supabase.from('workouts').insert({ date: today, minutes: 1, type: 'ducha', user_id: user.id }).select().single();
-    if (w) { setWorkouts(prev => [w, ...prev]); setToast(lang === 'en' ? 'Shower logged' : 'Ducha registrada'); setTimeout(() => setToast(''), 2000); }
+    if (w) { setWorkouts(prev => [w, ...prev]); setToast(getLang() === 'en' ? 'Shower logged' : 'Ducha registrada'); setTimeout(() => setToast(''), 2000); }
   };
 
   const saveProfile = async ({ name, sobrietyDate, contacts: c, helpLines: h, anchors: a, blackPhotos: b, yt }) => {
