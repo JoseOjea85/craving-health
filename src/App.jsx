@@ -342,8 +342,8 @@ function WeekChart({ workouts, goal }) {
   return (
     <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 20, padding: 20, marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <span style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>ESTA SEMANA</span>
-        <span style={{ color: C.muted, fontSize: 11 }}>Meta: {goal} min/día</span>
+        <span style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>{lang === 'en' ? 'THIS WEEK' : 'ESTA SEMANA'}</span>
+        <span style={{ color: C.muted, fontSize: 11 }}>{lang === 'en' ? 'Goal' : 'Meta'}: {goal} min/{lang === 'en' ? 'day' : 'día'}</span>
       </div>
       <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 96 }}>
         {days.map((d) => {
@@ -415,7 +415,7 @@ function LogModal({ onAdd, onClose }) {
 }
 
 // ─── PAGE: HOME ───────────────────────────────────────────────
-function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onColdShower, youtubePlaylist }) {
+function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onColdShower, youtubePlaylist, lang }) {
   const [userCount, setUserCount] = useState(null);
 
   useEffect(() => {
@@ -467,7 +467,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
           <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{getLang() === 'en' ? 'Active days' : 'Días activo'}</div>
         </div>
       </div>
-      <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} />
+      <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} lang={lang} />
 
       {/* Comunidad */}
       {userCount !== null && (
@@ -507,7 +507,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
 }
 
 // ─── PAGE: ACTIVIDAD ──────────────────────────────────────────
-function PageActividad({ workouts, onAdd, onColdShower }) {
+function PageActividad({ workouts, onAdd, onColdShower, lang }) {
   const [showLog, setShowLog] = useState(false);
   const today = format(new Date(), 'yyyy-MM-dd');
   const todayMin = workouts.filter(w => w.date === today).reduce((s, w) => s + w.minutes, 0);
@@ -522,7 +522,7 @@ function PageActividad({ workouts, onAdd, onColdShower }) {
       {showLog && <LogModal onAdd={onAdd} onClose={() => setShowLog(false)} />}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800 }}>Tu actividad</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 800 }}>{lang === 'en' ? 'Your activity' : 'Tu actividad'}</h1>
           <p style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>El cuerpo cura. Muévete cada día.</p>
         </div>
         <button onClick={() => setShowLog(true)} style={{ width: 40, height: 40, borderRadius: '50%', background: `${C.primary}20`, border: `1px solid ${C.primary}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: C.primary }}>
@@ -683,7 +683,7 @@ function PageApoyo({ contacts, helpLines }) {
 }
 
 // ─── PAGE: PERFIL ─────────────────────────────────────────────
-function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary, youtubePlaylist }) {
+function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary, youtubePlaylist, lang }) {
   const [name, setName] = useState(profile?.name || '');
   const [sobrietyDate, setSobrietyDate] = useState(profile?.sobriety_date || '');
   const [myContacts, setMyContacts] = useState(contacts?.length > 0 ? contacts : [{ name: '', phone: '', role: '' }, { name: '', phone: '', role: '' }]);
@@ -724,7 +724,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 28 }}>
-        {[{ v: days, l: 'Días activo' }, { v: Math.round(totalMin/60), l: 'Horas total' }, { v: workouts.length, l: 'Sesiones' }].map(s => (
+        {[{ v: days, l: lang === 'en' ? 'Active days' : 'Días activo' }, { v: Math.round(totalMin/60), l: lang === 'en' ? 'Total hours' : 'Horas total' }, { v: workouts.length, l: lang === 'en' ? 'Sessions' : 'Sesiones' }].map(s => (
           <div key={s.l} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '16px 8px', textAlign: 'center' }}>
             <div style={{ fontSize: 26, fontWeight: 700 }}>{s.v}</div>
             <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{s.l}</div>
@@ -732,7 +732,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
         ))}
       </div>
 
-      <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} />
+      <Achievements sobrietyDays={sobrietyDays || 0} workouts={workouts} diary={diary || []} lang={lang} />
 
       <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>NOMBRE</label>
       <input value={name} onChange={e => setName(e.target.value)} placeholder="Tu nombre" style={{ ...inputStyle, marginTop: 8 }} />
@@ -784,7 +784,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
       <PhotoUploader photos={myBlackPhotos} onAdd={p => setMyBlackPhotos([...myBlackPhotos, p])} onRemove={i => setMyBlackPhotos(myBlackPhotos.filter((_, idx) => idx !== i))} title="🖤 Foto negra" desc="Imágenes que te recuerdan el daño" dark={true} />
 
       <button onClick={saveAll} disabled={saving} style={{ width: '100%', padding: '16px 0', borderRadius: 16, background: saved ? `${C.green}30` : `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: saved ? `1px solid ${C.green}` : 'none', color: saved ? C.green : '#fff', fontWeight: 700, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-        {saving ? <Loader2 size={20} /> : saved ? <><Check size={20} /> Guardado</> : 'Guardar perfil'}
+        {saving ? <Loader2 size={20} /> : saved ? <><Check size={20} /> {lang === 'en' ? 'Saved' : 'Guardado'}</> : lang === 'en' ? 'Save profile' : 'Guardar perfil'}
       </button>
     </div>
   );
@@ -878,23 +878,23 @@ function PageDiario({ diary, onAdd, setPage }) {
 }
 
 // ─── ACHIEVEMENTS ─────────────────────────────────────────────
-function Achievements({ sobrietyDays, workouts, diary }) {
+function Achievements({ sobrietyDays, workouts, diary, lang }) {
   const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
   const workoutDays = new Set(workouts.map(w => w.date)).size;
 
   const badges = [
-    { id: 1, emoji: '🌱', title: 'Primer día', desc: '1 día en abstinencia', unlocked: sobrietyDays >= 1 },
-    { id: 2, emoji: '🔥', title: 'Una semana', desc: '7 días en abstinencia', unlocked: sobrietyDays >= 7 },
-    { id: 3, emoji: '💪', title: 'Un mes', desc: '30 días en abstinencia', unlocked: sobrietyDays >= 30 },
-    { id: 4, emoji: '🏆', title: 'Tres meses', desc: '90 días en abstinencia', unlocked: sobrietyDays >= 90 },
-    { id: 5, emoji: '👑', title: 'Medio año', desc: '180 días en abstinencia', unlocked: sobrietyDays >= 180 },
-    { id: 6, emoji: '🎯', title: 'Un año', desc: '365 días en abstinencia', unlocked: sobrietyDays >= 365 },
-    { id: 7, emoji: '🏃', title: 'En movimiento', desc: 'Primera sesión de ejercicio', unlocked: workoutDays >= 1 },
-    { id: 8, emoji: '⚡', title: 'Constante', desc: '7 días de ejercicio', unlocked: workoutDays >= 7 },
-    { id: 9, emoji: '🧘', title: 'Mente sana', desc: '10 horas de ejercicio total', unlocked: totalMin >= 600 },
-    { id: 10, emoji: '📖', title: 'Primer diario', desc: 'Primera entrada en el diario', unlocked: diary.length >= 1 },
-    { id: 11, emoji: '✍️', title: 'Escritor', desc: '7 entradas en el diario', unlocked: diary.length >= 7 },
-    { id: 12, emoji: '💙', title: 'Comprometido', desc: '30 entradas en el diario', unlocked: diary.length >= 30 },
+    { id: 1, emoji: '🌱', title: lang === 'en' ? 'First day' : 'Primer día', desc: lang === 'en' ? '1 day sober' : '1 día en abstinencia', unlocked: sobrietyDays >= 1 },
+    { id: 2, emoji: '🔥', title: lang === 'en' ? 'One week' : 'Una semana', desc: lang === 'en' ? '7 days sober' : '7 días en abstinencia', unlocked: sobrietyDays >= 7 },
+    { id: 3, emoji: '💪', title: lang === 'en' ? 'One month' : 'Un mes', desc: lang === 'en' ? '30 days sober' : '30 días en abstinencia', unlocked: sobrietyDays >= 30 },
+    { id: 4, emoji: '🏆', title: lang === 'en' ? 'Three months' : 'Tres meses', desc: lang === 'en' ? '90 days sober' : '90 días en abstinencia', unlocked: sobrietyDays >= 90 },
+    { id: 5, emoji: '👑', title: lang === 'en' ? 'Half a year' : 'Medio año', desc: lang === 'en' ? '180 days sober' : '180 días en abstinencia', unlocked: sobrietyDays >= 180 },
+    { id: 6, emoji: '🎯', title: lang === 'en' ? 'One year' : 'Un año', desc: lang === 'en' ? '365 days sober' : '365 días en abstinencia', unlocked: sobrietyDays >= 365 },
+    { id: 7, emoji: '🏃', title: lang === 'en' ? 'On the move' : 'En movimiento', desc: lang === 'en' ? 'First workout' : 'Primera sesión de ejercicio', unlocked: workoutDays >= 1 },
+    { id: 8, emoji: '⚡', title: lang === 'en' ? 'Consistent' : 'Constante', desc: lang === 'en' ? '7 workout days' : '7 días de ejercicio', unlocked: workoutDays >= 7 },
+    { id: 9, emoji: '🧘', title: lang === 'en' ? 'Healthy mind' : 'Mente sana', desc: lang === 'en' ? '10 hours of exercise' : '10 horas de ejercicio total', unlocked: totalMin >= 600 },
+    { id: 10, emoji: '📖', title: lang === 'en' ? 'First journal' : 'Primer diario', desc: lang === 'en' ? 'First journal entry' : 'Primera entrada en el diario', unlocked: diary.length >= 1 },
+    { id: 11, emoji: '✍️', title: lang === 'en' ? 'Writer' : 'Escritor', desc: lang === 'en' ? '7 journal entries' : '7 entradas en el diario', unlocked: diary.length >= 7 },
+    { id: 12, emoji: '💙', title: lang === 'en' ? 'Committed' : 'Comprometido', desc: lang === 'en' ? '30 journal entries' : '30 entradas en el diario', unlocked: diary.length >= 30 },
   ];
 
   const unlocked = badges.filter(b => b.unlocked);
@@ -902,7 +902,7 @@ function Achievements({ sobrietyDays, workouts, diary }) {
   return (
     <div style={{ marginBottom: 28 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>LOGROS</div>
+        <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>{lang === 'en' ? 'ACHIEVEMENTS' : 'LOGROS'}</div>
         <div style={{ fontSize: 12, color: C.primary, fontWeight: 600 }}>{unlocked.length}/{badges.length}</div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
@@ -1046,12 +1046,12 @@ export default function App() {
   const sobrietyDays = profile?.sobriety_date ? differenceInDays(new Date(), new Date(profile.sobriety_date)) : 0;
 
   const pages = {
-    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} />,
-    actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} />,
+    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} lang={lang} />,
+    actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} />,
     diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} />,
     meditacion: <PageMeditacion />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} />,
-    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} />,
+    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} lang={lang} />,
   };
 
   return (
