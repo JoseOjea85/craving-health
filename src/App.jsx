@@ -576,11 +576,11 @@ function PageMeditacion() {
     return () => clearInterval(t);
   }, [running]);
   const sessions = [
-    { id: 1, title: 'Respiración 4-7-8', duration: '5 min', emoji: '🌬️', desc: 'Inhala 4s, retén 7s, exhala 8s. Calma instantánea.', gradient: 'linear-gradient(135deg, #60a5fa, #22d3ee)', shape: 'circles' },
-    { id: 2, title: 'Escaneo corporal', duration: '10 min', emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.', gradient: 'linear-gradient(135deg, #a78bfa, #7c5cfc)', shape: 'waves' },
-    { id: 3, title: 'Visualización positiva', duration: '7 min', emoji: '🌅', desc: 'Imagina tu vida sin el tóxico. Vívela en tu mente.', gradient: 'linear-gradient(135deg, #fb923c, #f87171)', shape: 'sun' },
-    { id: 4, title: 'Gratitud matinal', duration: '3 min', emoji: '🌱', desc: 'Tres cosas por las que estás agradecido hoy.', gradient: 'linear-gradient(135deg, #4ade80, #22d3ee)', shape: 'leaves' },
-    { id: 5, title: 'Mantra de fuerza', duration: '5 min', emoji: '💪', desc: 'Soy más fuerte que este impulso.', gradient: 'linear-gradient(135deg, #ef4444, #fb923c)', shape: 'triangles' },
+    { id: 1, title: 'Respiración 4-7-8', duration: '5 min', target: 300, emoji: '🌬️', desc: 'Inhala 4s, retén 7s, exhala 8s. Calma instantánea.', gradient: 'linear-gradient(135deg, #60a5fa, #22d3ee)', shape: 'circles' },
+    { id: 2, title: 'Escaneo corporal', duration: '10 min', target: 600, emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.', gradient: 'linear-gradient(135deg, #a78bfa, #7c5cfc)', shape: 'waves' },
+    { id: 3, title: 'Visualización positiva', duration: '7 min', target: 420, emoji: '🌅', desc: 'Imagina tu vida sin el tóxico. Vívela en tu mente.', gradient: 'linear-gradient(135deg, #fb923c, #f87171)', shape: 'sun' },
+    { id: 4, title: 'Gratitud matinal', duration: '3 min', target: 180, emoji: '🌱', desc: 'Tres cosas por las que estás agradecido hoy.', gradient: 'linear-gradient(135deg, #4ade80, #22d3ee)', shape: 'leaves' },
+    { id: 5, title: 'Mantra de fuerza', duration: '5 min', target: 300, emoji: '💪', desc: 'Soy más fuerte que este impulso.', gradient: 'linear-gradient(135deg, #ef4444, #fb923c)', shape: 'triangles' },
   ];
   const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
   return (
@@ -599,8 +599,8 @@ function PageMeditacion() {
             <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: -100, right: -100, animation: 'pulse 6s ease-in-out infinite' }} />
           </>)}
           {active.shape === 'sun' && (<>
-            <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', animation: 'sunPulse 4s ease-in-out infinite' }} />
-            <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', animation: 'rotate 30s linear infinite' }} />
+            <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.25), transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', animation: 'sunPulse 4s ease-in-out infinite', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', width: 130, height: 130, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.18)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', animation: 'rotate 30s linear infinite', pointerEvents: 'none' }} />
           </>)}
           {active.shape === 'leaves' && (<>
             <div style={{ position: 'absolute', fontSize: 60, top: 20, left: 20, opacity: 0.3, animation: 'leafFloat1 9s ease-in-out infinite' }}>🍃</div>
@@ -614,7 +614,7 @@ function PageMeditacion() {
           <div style={{ fontSize: 80, marginBottom: 16, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))', position: 'relative', zIndex: 2 }}>{active.emoji}</div>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8, color: '#000', position: 'relative', zIndex: 2 }}>{active.title}</h2>
           <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.75)', marginBottom: 28, position: 'relative', zIndex: 2, fontWeight: 500 }}>{active.desc}</p>
-          <div style={{ fontSize: 56, fontWeight: 900, color: '#000', marginBottom: 8, position: 'relative', zIndex: 2 }}>{fmt(seconds)}</div>
+          <div style={{ fontSize: 56, fontWeight: 900, color: '#000', marginBottom: 8, position: 'relative', zIndex: 2 }}>{fmt(Math.max(0, active.target - seconds))}</div>
           <p style={{ color: 'rgba(0,0,0,0.7)', fontSize: 13, marginBottom: 28, position: 'relative', zIndex: 2, fontWeight: 600 }}>Respira. Estás en el lugar correcto.</p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
             <button onClick={() => setRunning(r => !r)} style={{ padding: '12px 28px', borderRadius: 14, background: `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: 'none', color: '#fff', fontWeight: 600, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
