@@ -590,13 +590,13 @@ function PageMeditacion() {
       {active ? (
         <div style={{ background: active.gradient, borderRadius: 24, padding: 40, textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', position: 'relative', overflow: 'hidden', minHeight: 480 }}>
           {active.shape === 'circles' && (<>
-            <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -60, left: -60, animation: 'float1 8s ease-in-out infinite' }} />
-            <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', bottom: -40, right: -30, animation: 'float2 10s ease-in-out infinite' }} />
-            <div style={{ position: 'absolute', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: '40%', right: 30, animation: 'float3 12s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -60, left: -60, animation: 'float1 8s ease-in-out infinite', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', bottom: -40, right: -30, animation: 'float2 10s ease-in-out infinite', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: '40%', right: 30, animation: 'float3 12s ease-in-out infinite', pointerEvents: 'none' }} />
           </>)}
           {active.shape === 'waves' && (<>
-            <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 20px, transparent 20px, transparent 40px)', animation: 'slideWaves 20s linear infinite' }} />
-            <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: -100, right: -100, animation: 'pulse 6s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 20px, transparent 20px, transparent 40px)', animation: 'slideWaves 20s linear infinite', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: -100, right: -100, animation: 'pulse 6s ease-in-out infinite', pointerEvents: 'none' }} />
           </>)}
           {active.shape === 'sun' && (<>
             <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.25), transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', animation: 'sunPulse 4s ease-in-out infinite', pointerEvents: 'none' }} />
