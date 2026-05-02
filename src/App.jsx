@@ -809,7 +809,7 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
 }
 
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
-function PageDiario({ diary, onAdd, setPage, lang }) {
+function PageDiario({ diary, onAdd, setPage, lang, sobrietyDays }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -837,7 +837,34 @@ function PageDiario({ diary, onAdd, setPage, lang }) {
   return (
     <div style={{ padding: '48px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
       <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>{lang === 'en' ? 'Journal' : 'Diario'}</h1>
-      <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>{lang === 'en' ? 'How are you today? Write it.' : '¿Cómo estás hoy? Escríbelo.'}</p>
+      <p style={{ fontSize: 12, color: C.muted, marginBottom: 16 }}>{lang === 'en' ? 'How are you today? Write it.' : '¿Cómo estás hoy? Escríbelo.'}</p>
+
+      {/* Constelación */}
+      {sobrietyDays > 0 && (
+        <div style={{ background: 'linear-gradient(180deg, #0a0a1a, #1a1a3a)', borderRadius: 20, padding: 20, marginBottom: 20, position: 'relative', overflow: 'hidden', height: 180 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, position: 'relative', zIndex: 2 }}>
+            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>{lang === 'en' ? 'YOUR SKY' : 'TU CIELO'}</span>
+            <span style={{ color: '#fbbf24', fontSize: 13, fontWeight: 700 }}>✨ {sobrietyDays}</span>
+          </div>
+          <svg viewBox="0 0 400 140" style={{ width: '100%', height: 130, position: 'absolute', left: 0, bottom: 0 }}>
+            {Array.from({ length: Math.min(sobrietyDays, 365) }).map((_, i) => {
+              const seed = (i * 9301 + 49297) % 233280;
+              const x = (seed / 233280) * 380 + 10;
+              const seed2 = ((i + 1) * 7919) % 233280;
+              const y = (seed2 / 233280) * 110 + 15;
+              const size = 1 + (i % 3) * 0.8;
+              const opacity = 0.4 + ((i * 7) % 6) * 0.1;
+              return (<circle key={i} cx={x} cy={y} r={size} fill="#fff" opacity={opacity}><animate attributeName="opacity" values={`${opacity};${opacity * 0.4};${opacity}`} dur={`${2 + (i % 4)}s`} repeatCount="indefinite" /></circle>);
+            })}
+            {sobrietyDays >= 30 && Array.from({ length: Math.min(Math.floor(sobrietyDays / 30), 12) }).map((_, i) => {
+              const cx = 30 + i * 30;
+              const cy = 30;
+              return (<g key={`big-${i}`}><circle cx={cx} cy={cy} r="2.5" fill="#fbbf24" opacity="0.9" /><circle cx={cx} cy={cy} r="6" fill="#fbbf24" opacity="0.15"><animate attributeName="r" values="6;10;6" dur="3s" repeatCount="indefinite" /></circle></g>);
+            })}
+          </svg>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, position: 'absolute', bottom: 10, left: 20, zIndex: 2, margin: 0 }}>{lang === 'en' ? `${sobrietyDays} day${sobrietyDays !== 1 ? 's' : ''} = ${sobrietyDays} star${sobrietyDays !== 1 ? 's' : ''}` : `${sobrietyDays} día${sobrietyDays !== 1 ? 's' : ''} = ${sobrietyDays} estrella${sobrietyDays !== 1 ? 's' : ''}`}</p>
+        </div>
+      )}
 
       {/* Today entry */}
       <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 20, padding: 20, marginBottom: 20 }}>
@@ -1140,7 +1167,7 @@ export default function App() {
   const pages = {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} lang={lang} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} />,
-    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} lang={lang} />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} lang={lang} sobrietyDays={sobrietyDays} />,
     meditacion: <PageMeditacion />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} lang={lang} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} lang={lang} />,
