@@ -576,11 +576,11 @@ function PageMeditacion() {
     return () => clearInterval(t);
   }, [running]);
   const sessions = [
-    { id: 1, title: 'Respiración 4-7-8', duration: '5 min', emoji: '🌬️', desc: 'Inhala 4s, retén 7s, exhala 8s. Calma instantánea.' },
-    { id: 2, title: 'Escaneo corporal', duration: '10 min', emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.' },
-    { id: 3, title: 'Visualización positiva', duration: '7 min', emoji: '🌅', desc: 'Imagina tu vida sin el tóxico. Vívela en tu mente.' },
-    { id: 4, title: 'Gratitud matinal', duration: '3 min', emoji: '🌱', desc: 'Tres cosas por las que estás agradecido hoy.' },
-    { id: 5, title: 'Mantra de fuerza', duration: '5 min', emoji: '💪', desc: 'Soy más fuerte que este impulso.' },
+    { id: 1, title: 'Respiración 4-7-8', duration: '5 min', emoji: '🌬️', desc: 'Inhala 4s, retén 7s, exhala 8s. Calma instantánea.', gradient: 'linear-gradient(135deg, #60a5fa, #22d3ee)' },
+    { id: 2, title: 'Escaneo corporal', duration: '10 min', emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.', gradient: 'linear-gradient(135deg, #a78bfa, #7c5cfc)' },
+    { id: 3, title: 'Visualización positiva', duration: '7 min', emoji: '🌅', desc: 'Imagina tu vida sin el tóxico. Vívela en tu mente.', gradient: 'linear-gradient(135deg, #fb923c, #f87171)' },
+    { id: 4, title: 'Gratitud matinal', duration: '3 min', emoji: '🌱', desc: 'Tres cosas por las que estás agradecido hoy.', gradient: 'linear-gradient(135deg, #4ade80, #22d3ee)' },
+    { id: 5, title: 'Mantra de fuerza', duration: '5 min', emoji: '💪', desc: 'Soy más fuerte que este impulso.', gradient: 'linear-gradient(135deg, #ef4444, #fb923c)' },
   ];
   const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
   return (
@@ -588,8 +588,9 @@ function PageMeditacion() {
       <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Meditación</h1>
       <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>Cada mañana, 5 minutos cambian el día</p>
       {active ? (
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: 28, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>{active.emoji}</div>
+        <div style={{ background: active.gradient, borderRadius: 24, padding: 40, textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15), transparent 60%)', pointerEvents: 'none' }} />
+          <div style={{ fontSize: 80, marginBottom: 16, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))', position: 'relative' }}>{active.emoji}</div>
           <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{active.title}</h2>
           <p style={{ fontSize: 13, color: C.muted, marginBottom: 24 }}>{active.desc}</p>
           <div style={{ fontSize: 52, fontWeight: 800, color: C.primary, marginBottom: 8 }}>{fmt(seconds)}</div>
@@ -605,7 +606,7 @@ function PageMeditacion() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {sessions.map(s => (
             <button key={s.id} onClick={() => { setActive(s); setSeconds(0); setRunning(true); }} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 18, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left', width: '100%' }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: `${C.cyan}15`, border: `1px solid ${C.cyan}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{s.emoji}</div>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: s.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>{s.emoji}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{s.title}</div>
                 <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{s.desc}</div>
@@ -974,13 +975,81 @@ export default function App() {
         localStorage.setItem(askedKey, '1');
       }
     }
+    if (Notification.permission !== 'granted') return;
+
+    const motivationalMessages = lang === 'en' ? [
+      'You\'re stronger than this impulse. 💪',
+      'One day at a time. Today is enough.',
+      'Your future self will thank you.',
+      'Every day clean is a victory.',
+      'You are not alone in this.',
+    ] : [
+      'Eres más fuerte que este impulso. 💪',
+      'Un día a la vez. Hoy es suficiente.',
+      'Tu yo del futuro te lo agradecerá.',
+      'Cada día limpio es una victoria.',
+      'No estás solo en esto.',
+    ];
+
+    const sendNotif = (key, title, body) => {
+      const today = new Date().toISOString().split('T')[0];
+      const lastKey = `notif_${key}_${today}`;
+      if (localStorage.getItem(lastKey)) return;
+      try {
+        new Notification(title, { body, icon: '/icon-192.png', badge: '/icon-192.png' });
+        localStorage.setItem(lastKey, '1');
+      } catch (e) { console.error(e); }
+    };
+
     const checkTime = () => {
       const now = new Date();
+      const hour = now.getHours();
+      const today = new Date().toISOString().split('T')[0];
+      const todayActivity = workouts.some(w => w.date === today);
+      const sobrietyDays = profile?.sobriety_date ? Math.floor((now - new Date(profile.sobriety_date)) / 86400000) : 0;
+
+      // 1. Meditación matinal (8:00 - 10:00)
+      if (hour >= 8 && hour < 10) {
+        sendNotif('meditation', 
+          lang === 'en' ? '🧘 Time to breathe' : '🧘 Hora de respirar', 
+          lang === 'en' ? 'Start your day with a guided meditation.' : 'Empieza tu día con una meditación guiada.'
+        );
+      }
+
+      // 2. Mensaje motivacional (12:00 - 14:00)
+      if (hour >= 12 && hour < 14) {
+        const msg = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+        sendNotif('motivation', 
+          lang === 'en' ? '💙 Craving Health' : '💙 Craving Health', 
+          msg
+        );
+      }
+
+      // 3. Recordatorio de actividad (18:00 - 21:00) si no ha registrado actividad hoy
+      if (hour >= 18 && hour < 21 && !todayActivity) {
+        sendNotif('activity', 
+          lang === 'en' ? '🏃 Have you moved today?' : '🏃 ¿Te has movido hoy?', 
+          lang === 'en' ? 'A bit of exercise lifts your day. Log it now.' : 'Un poco de ejercicio levanta el día. Regístralo ahora.'
+        );
+      }
+
+      // 4. Recordatorio de logro próximo
+      if (hour >= 20 && hour < 22 && sobrietyDays > 0) {
+        const nextMilestones = [1, 7, 30, 90, 180, 365, 730, 1095, 1460, 1825];
+        const next = nextMilestones.find(m => m > sobrietyDays);
+        if (next && next - sobrietyDays <= 3) {
+          const daysLeft = next - sobrietyDays;
+          sendNotif('milestone',
+            lang === 'en' ? '🏆 You\'re close to an achievement' : '🏆 Cerca de un logro',
+            lang === 'en' ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} away from your next milestone.` : `${daysLeft} día${daysLeft !== 1 ? 's' : ''} para tu próximo logro.`
+          );
+        }
+      }
     };
     checkTime();
     const interval = setInterval(checkTime, 60000);
     return () => clearInterval(interval);
-  }, [user, workouts]);
+  }, [user, workouts, profile, lang]);
 
   const loadData = async () => {
     const uid = user.id;
