@@ -865,11 +865,11 @@ function PageDiario({ diary, onAdd, setPage, lang }) {
       </div>
 
       {/* Past entries */}
-      {diary.filter(d => d.date !== today).length > 0 && (
+      {diary.length > 0 && (
         <>
           <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{lang === 'en' ? 'PREVIOUS ENTRIES' : 'ENTRADAS ANTERIORES'}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {diary.filter(d => d.date !== today).slice(0, 10).map((d, i) => (
+            {diary.slice(0, 20).map((d, i) => (
               <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: d.text ? 8 : 0 }}>
                   <span style={{ fontSize: 12, color: C.muted }}>{format(new Date(d.date), 'dd/MM/yyyy')}</span>
@@ -1116,10 +1116,8 @@ export default function App() {
   };
 
   const addDiary = async (data) => {
-    const today = format(new Date(), 'yyyy-MM-dd');
-    await supabase.from('diary').delete().eq('user_id', user.id).eq('date', today);
     const { data: d } = await supabase.from('diary').insert({ ...data, user_id: user.id }).select().single();
-    if (d) setDiary(prev => [d, ...prev.filter(x => x.date !== today)]);
+    if (d) setDiary(prev => [d, ...prev]);
   };
 
   const logout = async () => { await supabase.auth.signOut(); setUser(null); };
