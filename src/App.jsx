@@ -153,7 +153,7 @@ function PulseCircle({ onSOS }) {
       <div style={{ marginTop: 10, fontSize: 11, color: danger ? C.red : C.muted, fontWeight: danger ? 700 : 400, letterSpacing: '0.1em' }}>
         {danger ? '⚠️ PULSO ELEVADO · TOCA PARA AYUDA' : 'TOCA SI ESTÁS EN RIESGO'}
       </div>
-      <style>{`@keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
+      <style>{`@keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } } @keyframes float1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px, 20px); } } @keyframes float2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-25px, -15px); } } @keyframes float3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-15px, 25px); } } @keyframes slideWaves { from { background-position: 0 0; } to { background-position: 60px 60px; } } @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 0.8; } } @keyframes sunPulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; } 50% { transform: translate(-50%,-50%) scale(1.2); opacity: 0.9; } } @keyframes rotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } } @keyframes leafFloat1 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(20px, 30px) rotate(20deg); } } @keyframes leafFloat2 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(-25px, 20px) rotate(-15deg); } } @keyframes leafFloat3 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(15px, -20px) rotate(25deg); } } @keyframes shake { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } } @keyframes shake2 { 0%,100% { transform: rotate(8deg); } 50% { transform: rotate(-8deg); } }`}</style>
     </div>
   );
 }
@@ -576,11 +576,11 @@ function PageMeditacion() {
     return () => clearInterval(t);
   }, [running]);
   const sessions = [
-    { id: 1, title: 'Respiración 4-7-8', duration: '5 min', emoji: '🌬️', desc: 'Inhala 4s, retén 7s, exhala 8s. Calma instantánea.', gradient: 'linear-gradient(135deg, #60a5fa, #22d3ee)' },
-    { id: 2, title: 'Escaneo corporal', duration: '10 min', emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.', gradient: 'linear-gradient(135deg, #a78bfa, #7c5cfc)' },
-    { id: 3, title: 'Visualización positiva', duration: '7 min', emoji: '🌅', desc: 'Imagina tu vida sin el tóxico. Vívela en tu mente.', gradient: 'linear-gradient(135deg, #fb923c, #f87171)' },
-    { id: 4, title: 'Gratitud matinal', duration: '3 min', emoji: '🌱', desc: 'Tres cosas por las que estás agradecido hoy.', gradient: 'linear-gradient(135deg, #4ade80, #22d3ee)' },
-    { id: 5, title: 'Mantra de fuerza', duration: '5 min', emoji: '💪', desc: 'Soy más fuerte que este impulso.', gradient: 'linear-gradient(135deg, #ef4444, #fb923c)' },
+    { id: 1, title: 'Respiración 4-7-8', duration: '5 min', emoji: '🌬️', desc: 'Inhala 4s, retén 7s, exhala 8s. Calma instantánea.', gradient: 'linear-gradient(135deg, #60a5fa, #22d3ee)', shape: 'circles' },
+    { id: 2, title: 'Escaneo corporal', duration: '10 min', emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.', gradient: 'linear-gradient(135deg, #a78bfa, #7c5cfc)', shape: 'waves' },
+    { id: 3, title: 'Visualización positiva', duration: '7 min', emoji: '🌅', desc: 'Imagina tu vida sin el tóxico. Vívela en tu mente.', gradient: 'linear-gradient(135deg, #fb923c, #f87171)', shape: 'sun' },
+    { id: 4, title: 'Gratitud matinal', duration: '3 min', emoji: '🌱', desc: 'Tres cosas por las que estás agradecido hoy.', gradient: 'linear-gradient(135deg, #4ade80, #22d3ee)', shape: 'leaves' },
+    { id: 5, title: 'Mantra de fuerza', duration: '5 min', emoji: '💪', desc: 'Soy más fuerte que este impulso.', gradient: 'linear-gradient(135deg, #ef4444, #fb923c)', shape: 'triangles' },
   ];
   const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
   return (
@@ -588,13 +588,34 @@ function PageMeditacion() {
       <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Meditación</h1>
       <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>Cada mañana, 5 minutos cambian el día</p>
       {active ? (
-        <div style={{ background: active.gradient, borderRadius: 24, padding: 40, textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15), transparent 60%)', pointerEvents: 'none' }} />
-          <div style={{ fontSize: 80, marginBottom: 16, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))', position: 'relative' }}>{active.emoji}</div>
-          <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{active.title}</h2>
-          <p style={{ fontSize: 13, color: C.muted, marginBottom: 24 }}>{active.desc}</p>
-          <div style={{ fontSize: 52, fontWeight: 800, color: C.primary, marginBottom: 8 }}>{fmt(seconds)}</div>
-          <p style={{ color: C.muted, fontSize: 12, marginBottom: 24 }}>Respira. Estás en el lugar correcto.</p>
+        <div style={{ background: active.gradient, borderRadius: 24, padding: 40, textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', position: 'relative', overflow: 'hidden', minHeight: 480 }}>
+          {active.shape === 'circles' && (<>
+            <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: -60, left: -60, animation: 'float1 8s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.10)', bottom: -40, right: -30, animation: 'float2 10s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: '40%', right: 30, animation: 'float3 12s ease-in-out infinite' }} />
+          </>)}
+          {active.shape === 'waves' && (<>
+            <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 20px, transparent 20px, transparent 40px)', animation: 'slideWaves 20s linear infinite' }} />
+            <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: -100, right: -100, animation: 'pulse 6s ease-in-out infinite' }} />
+          </>)}
+          {active.shape === 'sun' && (<>
+            <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', animation: 'sunPulse 4s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', animation: 'rotate 30s linear infinite' }} />
+          </>)}
+          {active.shape === 'leaves' && (<>
+            <div style={{ position: 'absolute', fontSize: 60, top: 20, left: 20, opacity: 0.3, animation: 'leafFloat1 9s ease-in-out infinite' }}>🍃</div>
+            <div style={{ position: 'absolute', fontSize: 50, top: '60%', right: 30, opacity: 0.3, animation: 'leafFloat2 11s ease-in-out infinite' }}>🍃</div>
+            <div style={{ position: 'absolute', fontSize: 40, bottom: 40, left: '40%', opacity: 0.3, animation: 'leafFloat3 13s ease-in-out infinite' }}>🍃</div>
+          </>)}
+          {active.shape === 'triangles' && (<>
+            <div style={{ position: 'absolute', width: 0, height: 0, borderLeft: '60px solid transparent', borderRight: '60px solid transparent', borderBottom: '100px solid rgba(255,255,255,0.15)', top: 30, left: 20, animation: 'shake 3s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', width: 0, height: 0, borderLeft: '40px solid transparent', borderRight: '40px solid transparent', borderBottom: '70px solid rgba(255,255,255,0.12)', bottom: 60, right: 30, animation: 'shake2 4s ease-in-out infinite' }} />
+          </>)}
+          <div style={{ fontSize: 80, marginBottom: 16, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))', position: 'relative', zIndex: 2 }}>{active.emoji}</div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8, color: '#000', position: 'relative', zIndex: 2 }}>{active.title}</h2>
+          <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.75)', marginBottom: 28, position: 'relative', zIndex: 2, fontWeight: 500 }}>{active.desc}</p>
+          <div style={{ fontSize: 56, fontWeight: 900, color: '#000', marginBottom: 8, position: 'relative', zIndex: 2 }}>{fmt(seconds)}</div>
+          <p style={{ color: 'rgba(0,0,0,0.7)', fontSize: 13, marginBottom: 28, position: 'relative', zIndex: 2, fontWeight: 600 }}>Respira. Estás en el lugar correcto.</p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
             <button onClick={() => setRunning(r => !r)} style={{ padding: '12px 28px', borderRadius: 14, background: `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: 'none', color: '#fff', fontWeight: 600, fontSize: 15, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               {running ? <Pause size={16} /> : <Play size={16} />} {running ? 'Pausar' : 'Reanudar'}
@@ -1129,7 +1150,7 @@ export default function App() {
 
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
-      <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: ${C.bg}; } input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); } input::placeholder { color: ${C.muted}; } @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }`}</style>
+      <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: ${C.bg}; } input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); } input::placeholder { color: ${C.muted}; } @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } } @keyframes float1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px, 20px); } } @keyframes float2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-25px, -15px); } } @keyframes float3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-15px, 25px); } } @keyframes slideWaves { from { background-position: 0 0; } to { background-position: 60px 60px; } } @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 0.8; } } @keyframes sunPulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; } 50% { transform: translate(-50%,-50%) scale(1.2); opacity: 0.9; } } @keyframes rotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } } @keyframes leafFloat1 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(20px, 30px) rotate(20deg); } } @keyframes leafFloat2 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(-25px, 20px) rotate(-15deg); } } @keyframes leafFloat3 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(15px, -20px) rotate(25deg); } } @keyframes shake { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } } @keyframes shake2 { 0%,100% { transform: rotate(8deg); } 50% { transform: rotate(-8deg); } }`}</style>
       {/* SOS flotante - solo en páginas distintas a home */}
       <button onClick={() => { const nl = lang === 'es' ? 'en' : 'es'; setLang(nl); localStorage.setItem('lang', nl); }} style={{ position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', left: 'calc(env(safe-area-inset-left, 0px) + 12px)', zIndex: 60, padding: '6px 12px', borderRadius: 20, background: 'rgba(20,20,30,0.85)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', gap: 6 }}>
         <span>{lang === 'es' ? '🇬🇧' : '🇪🇸'}</span>
