@@ -577,7 +577,7 @@ function PageMeditacion() {
   }, [running]);
   const sessions = [
     { id: 1, title: 'Respiración 4-7-8', duration: '5 min', target: 300, emoji: '🌬️', desc: 'Inhala 4s, retén 7s, exhala 8s. Calma instantánea.', gradient: 'linear-gradient(135deg, #60a5fa, #22d3ee)', shape: 'circles' },
-    { id: 2, title: 'Escaneo corporal', duration: '10 min', target: 600, emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.', gradient: 'linear-gradient(135deg, #a78bfa, #7c5cfc)', shape: 'waves' },
+    { id: 2, title: 'Escaneo corporal', duration: '5 min', target: 300, emoji: '🧘', desc: 'Recorre tu cuerpo soltando tensión de pies a cabeza.', gradient: 'linear-gradient(135deg, #a78bfa, #7c5cfc)', shape: 'waves' },
     { id: 3, title: 'Visualización positiva', duration: '7 min', target: 420, emoji: '🌅', desc: 'Imagina tu vida sin el tóxico. Vívela en tu mente.', gradient: 'linear-gradient(135deg, #fb923c, #f87171)', shape: 'sun' },
     { id: 4, title: 'Gratitud matinal', duration: '3 min', target: 180, emoji: '🌱', desc: 'Tres cosas por las que estás agradecido hoy.', gradient: 'linear-gradient(135deg, #4ade80, #22d3ee)', shape: 'leaves' },
     { id: 5, title: 'Mantra de fuerza', duration: '5 min', target: 300, emoji: '💪', desc: 'Soy más fuerte que este impulso.', gradient: 'linear-gradient(135deg, #ef4444, #fb923c)', shape: 'triangles' },
