@@ -81,7 +81,7 @@ function AuthPage({ onAuth }) {
         </div>
       </div>
     
-      <div style={{ marginTop: 24, maxWidth: 400, padding: "14px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", textAlign: "center" }}><p style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, lineHeight: 1.6, margin: 0 }}><span style={{ fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>Version Beta</span> — Esta app se ofrece sin garantias. El uso es responsabilidad exclusiva del usuario.</p></div>
+      <div style={{ marginTop: 24, maxWidth: 400, padding: "14px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", textAlign: "center" }}><p style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, lineHeight: 1.6, margin: 0 }}><span style={{ fontWeight: 600, color: "rgba(255,255,255,0.5)" }}>Version Beta</span> — Esta app no es un dispositivo médico, no sustituye atención profesional. Se ofrece sin garantías y el uso es responsabilidad exclusiva del usuario.</p></div>
     </div>
   );
 }
