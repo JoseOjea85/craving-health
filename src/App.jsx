@@ -520,9 +520,12 @@ function PageActividad({ workouts, onAdd, onColdShower, lang, sobrietyDays }) {
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800 }}>{lang === 'en' ? 'Your activity' : 'Tu actividad'}</h1>
           <p style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{lang === 'en' ? 'The body heals. Move every day.' : 'El cuerpo cura. Muévete cada día.'}</p>
+        </div>
+        <button onClick={() => setShowLog(true)} aria-label="Add activity" style={{ width: 44, height: 44, borderRadius: '50%', background: `linear-gradient(135deg, ${C.primary}, ${C.cyan})`, border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 300 }}>+</button>
+      </div>
 
       {/* Tu árbol */}
-      <div style={{ background: 'linear-gradient(180deg, #1a2e1a, #0f1f0f)', borderRadius: 20, padding: 20, marginBottom: 20, position: 'relative', overflow: 'hidden', textAlign: 'center', maxWidth: 360, marginLeft: 'auto', marginRight: 'auto' }}>
+      <div style={{ background: 'linear-gradient(180deg, #1a2e1a, #0f1f0f)', borderRadius: 20, padding: 20, marginBottom: 20, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>{lang === 'en' ? 'YOUR TREE' : 'TU ÁRBOL'}</span>
           <span style={{ color: '#4ade80', fontSize: 13, fontWeight: 700 }}>🌱 {sobrietyDays || 0}</span>
@@ -587,8 +590,7 @@ function PageActividad({ workouts, onAdd, onColdShower, lang, sobrietyDays }) {
           )}
         </p>
       </div>
-        </div>
-        <button onClick={() => setShowLog(true)} style={{ width: 40, height: 40, borderRadius: '50%', background: `${C.primary}20`, border: `1px solid ${C.primary}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: C.primary }}>
+        <button onClick={() => setShowLog(true)} style={{display: 'none'}} style={{ width: 40, height: 40, borderRadius: '50%', background: `${C.primary}20`, border: `1px solid ${C.primary}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: C.primary }}>
           <Plus size={20} />
         </button>
       </div>
