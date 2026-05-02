@@ -503,7 +503,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
 }
 
 // ─── PAGE: ACTIVIDAD ──────────────────────────────────────────
-function PageActividad({ workouts, onAdd, onColdShower, lang }) {
+function PageActividad({ workouts, onAdd, onColdShower, lang, sobrietyDays }) {
   const [showLog, setShowLog] = useState(false);
   const today = format(new Date(), 'yyyy-MM-dd');
   const todayMin = workouts.filter(w => w.date === today).reduce((s, w) => s + w.minutes, 0);
@@ -520,6 +520,73 @@ function PageActividad({ workouts, onAdd, onColdShower, lang }) {
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800 }}>{lang === 'en' ? 'Your activity' : 'Tu actividad'}</h1>
           <p style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{lang === 'en' ? 'The body heals. Move every day.' : 'El cuerpo cura. Muévete cada día.'}</p>
+
+      {/* Tu árbol */}
+      <div style={{ background: 'linear-gradient(180deg, #1a2e1a, #0f1f0f)', borderRadius: 20, padding: 20, marginBottom: 20, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>{lang === 'en' ? 'YOUR TREE' : 'TU ÁRBOL'}</span>
+          <span style={{ color: '#4ade80', fontSize: 13, fontWeight: 700 }}>🌱 {sobrietyDays || 0}</span>
+        </div>
+        <svg viewBox="0 0 200 200" style={{ width: 160, height: 160 }}>
+          {/* Suelo */}
+          <ellipse cx="100" cy="180" rx="60" ry="6" fill="#2d4a2d" opacity="0.6" />
+          {sobrietyDays === 0 && (
+            <text x="100" y="120" textAnchor="middle" fontSize="40">🌰</text>
+          )}
+          {sobrietyDays >= 1 && sobrietyDays < 7 && (<>
+            <line x1="100" y1="180" x2="100" y2="160" stroke="#4ade80" strokeWidth="2" />
+            <circle cx="100" cy="155" r="6" fill="#4ade80" />
+          </>)}
+          {sobrietyDays >= 7 && sobrietyDays < 30 && (<>
+            <line x1="100" y1="180" x2="100" y2="130" stroke="#4ade80" strokeWidth="3" />
+            <ellipse cx="92" cy="135" rx="8" ry="4" fill="#4ade80" transform="rotate(-30 92 135)" />
+            <ellipse cx="108" cy="140" rx="8" ry="4" fill="#4ade80" transform="rotate(30 108 140)" />
+            <circle cx="100" cy="125" r="8" fill="#22c55e" />
+          </>)}
+          {sobrietyDays >= 30 && sobrietyDays < 90 && (<>
+            <rect x="97" y="100" width="6" height="80" fill="#7c5e3d" />
+            <ellipse cx="100" cy="90" rx="35" ry="30" fill="#22c55e" />
+            <ellipse cx="80" cy="100" rx="20" ry="15" fill="#16a34a" />
+            <ellipse cx="120" cy="100" rx="20" ry="15" fill="#16a34a" />
+          </>)}
+          {sobrietyDays >= 90 && sobrietyDays < 365 && (<>
+            <rect x="94" y="80" width="12" height="100" fill="#7c5e3d" />
+            <ellipse cx="100" cy="60" rx="50" ry="40" fill="#22c55e" />
+            <ellipse cx="65" cy="80" rx="25" ry="20" fill="#16a34a" />
+            <ellipse cx="135" cy="80" rx="25" ry="20" fill="#16a34a" />
+            <ellipse cx="100" cy="40" rx="30" ry="20" fill="#4ade80" />
+          </>)}
+          {sobrietyDays >= 365 && (<>
+            <rect x="92" y="70" width="16" height="110" fill="#5c3d1a" />
+            <ellipse cx="100" cy="50" rx="60" ry="50" fill="#16a34a" />
+            <ellipse cx="55" cy="70" rx="30" ry="25" fill="#15803d" />
+            <ellipse cx="145" cy="70" rx="30" ry="25" fill="#15803d" />
+            <ellipse cx="100" cy="25" rx="40" ry="25" fill="#22c55e" />
+            <ellipse cx="70" cy="40" rx="25" ry="18" fill="#4ade80" />
+            <ellipse cx="130" cy="40" rx="25" ry="18" fill="#4ade80" />
+            <circle cx="80" cy="60" r="3" fill="#fbbf24" />
+            <circle cx="120" cy="55" r="3" fill="#fbbf24" />
+            <circle cx="100" cy="35" r="3" fill="#fbbf24" />
+          </>)}
+        </svg>
+        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, margin: 0 }}>
+          {lang === 'en' ? (
+            sobrietyDays === 0 ? 'A seed waiting to grow' :
+            sobrietyDays < 7 ? 'A small sprout' :
+            sobrietyDays < 30 ? 'Growing strong' :
+            sobrietyDays < 90 ? 'A young tree' :
+            sobrietyDays < 365 ? 'A solid tree' :
+            'A majestic tree 🌟'
+          ) : (
+            sobrietyDays === 0 ? 'Una semilla esperando crecer' :
+            sobrietyDays < 7 ? 'Un pequeño brote' :
+            sobrietyDays < 30 ? 'Creciendo con fuerza' :
+            sobrietyDays < 90 ? 'Un árbol joven' :
+            sobrietyDays < 365 ? 'Un árbol sólido' :
+            'Un árbol majestuoso 🌟'
+          )}
+        </p>
+      </div>
         </div>
         <button onClick={() => setShowLog(true)} style={{ width: 40, height: 40, borderRadius: '50%', background: `${C.primary}20`, border: `1px solid ${C.primary}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: C.primary }}>
           <Plus size={20} />
@@ -1166,7 +1233,7 @@ export default function App() {
 
   const pages = {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} lang={lang} />,
-    actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} />,
+    actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} sobrietyDays={sobrietyDays} />,
     diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} lang={lang} sobrietyDays={sobrietyDays} />,
     meditacion: <PageMeditacion />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} lang={lang} />,
