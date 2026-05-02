@@ -522,12 +522,12 @@ function PageActividad({ workouts, onAdd, onColdShower, lang, sobrietyDays }) {
           <p style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{lang === 'en' ? 'The body heals. Move every day.' : 'El cuerpo cura. Muévete cada día.'}</p>
 
       {/* Tu árbol */}
-      <div style={{ background: 'linear-gradient(180deg, #1a2e1a, #0f1f0f)', borderRadius: 20, padding: 20, marginBottom: 20, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
+      <div style={{ background: 'linear-gradient(180deg, #1a2e1a, #0f1f0f)', borderRadius: 20, padding: 20, marginBottom: 20, position: 'relative', overflow: 'hidden', textAlign: 'center', maxWidth: 360, marginLeft: 'auto', marginRight: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, letterSpacing: '0.2em', fontWeight: 600 }}>{lang === 'en' ? 'YOUR TREE' : 'TU ÁRBOL'}</span>
           <span style={{ color: '#4ade80', fontSize: 13, fontWeight: 700 }}>🌱 {sobrietyDays || 0}</span>
         </div>
-        <svg viewBox="0 0 200 200" style={{ width: 160, height: 160 }}>
+        <svg viewBox="0 0 200 200" style={{ width: 200, height: 200, display: 'block', margin: '0 auto' }}>
           {/* Suelo */}
           <ellipse cx="100" cy="180" rx="60" ry="6" fill="#2d4a2d" opacity="0.6" />
           {sobrietyDays === 0 && (
