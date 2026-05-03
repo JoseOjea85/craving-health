@@ -482,9 +482,9 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
       <p style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{getLang() === 'en' ? 'QUICK ACCESS' : 'ACCESO RÁPIDO'}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {[
-          { icon: '🏃', title: lang === 'en' ? 'Log activity' : 'Registrar actividad', sub: lang === 'en' ? 'Add today\'s workout' : 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary },
+          { icon: '🏃', title: lang === 'en' ? 'Log activity' : 'Registrar actividad', sub: lang === 'en' ? 'Add today\'s workout' : 'Añade tu ejercicio de hoy', page: 'actividad', color: C.primary, done: workouts.some(w => w.date === format(new Date(), 'yyyy-MM-dd') && w.type !== 'ducha') },
           { icon: '🧘', title: lang === 'en' ? 'Morning meditation' : 'Meditación matinal', sub: lang === 'en' ? 'Start the day with calm' : 'Empieza el día con calma', page: 'meditacion', color: C.cyan },
-          { icon: '🚿', title: lang === 'en' ? 'Cold shower' : 'Ducha fría', sub: lang === 'en' ? 'Tap to log it' : 'Registrar que la has hecho', action: 'coldShower', color: C.cyan },
+          { icon: '🚿', title: lang === 'en' ? 'Cold shower' : 'Ducha fría', sub: lang === 'en' ? 'Tap to log it' : 'Registrar que la has hecho', action: 'coldShower', color: C.cyan, done: workouts.some(w => w.date === format(new Date(), 'yyyy-MM-dd') && w.type === 'ducha') },
           { icon: '🎵', title: lang === 'en' ? 'Anti-craving music' : 'Mi música anti-craving', sub: lang === 'en' ? (youtubePlaylist ? 'Open YouTube playlist' : 'Set up in Profile') : (youtubePlaylist ? 'Abrir playlist de YouTube' : 'Configura tu playlist en Perfil'), action: 'youtube', color: '#ef4444' },
           { icon: '💙', title: lang === 'en' ? 'I need support' : 'Necesito apoyo', sub: lang === 'en' ? 'Phones and resources' : 'Teléfonos y recursos', page: 'apoyo', color: C.green },
         ].map(item => (
@@ -494,7 +494,7 @@ function PageHome({ workouts, profile, setPage, onSOS, sobrietyDays, diary, onCo
               <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{item.title}</div>
               <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{item.sub}</div>
             </div>
-            <ChevronRight size={16} color={C.muted} />
+            {item.done ? <span style={{ fontSize: 18, color: C.green, fontWeight: 700 }}>✓</span> : <ChevronRight size={16} color={C.muted} />}
           </button>
         ))}
       </div>
