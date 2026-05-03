@@ -1031,6 +1031,63 @@ function PageDiario({ diary, onAdd, onDelete, onEdit, setPage, lang, sobrietyDay
 }
 
 // ─── ACHIEVEMENTS ─────────────────────────────────────────────
+async function shareAchievement(badge, lang) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1080;
+  const ctx = canvas.getContext('2d');
+
+  // Fondo gradiente
+  const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
+  grad.addColorStop(0, '#7c5cfc');
+  grad.addColorStop(1, '#22d3ee');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Capa oscura
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Emoji grande
+  ctx.font = '300px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(badge.emoji, 540, 380);
+
+  // Título del logro
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 80px -apple-system, sans-serif';
+  ctx.fillText(badge.title.toUpperCase(), 540, 600);
+
+  // Descripción
+  ctx.font = '40px -apple-system, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fillText(badge.desc, 540, 680);
+
+  // Marca
+  ctx.font = 'bold 36px -apple-system, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillText('CRAVING HEALTH', 540, 980);
+
+  // Convertir a blob y compartir
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], 'achievement.png', { type: 'image/png' });
+    const shareText = lang === 'en' ? `I unlocked the achievement "${badge.title}"! 🎉` : `He desbloqueado el logro "${badge.title}"! 🎉`;
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], text: shareText, title: 'Craving Health' });
+      } catch (e) { console.log('Share cancelled'); }
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `craving-health-${badge.title.replace(/\s+/g, '-')}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  }, 'image/png');
+}
+
 function Achievements({ sobrietyDays, workouts, diary, lang }) {
   const totalMin = workouts.reduce((s, w) => s + w.minutes, 0);
   const workoutDays = new Set(workouts.map(w => w.date)).size;
@@ -1068,10 +1125,10 @@ function Achievements({ sobrietyDays, workouts, diary, lang }) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
         {badges.map(b => (
-          <div key={b.id} style={{ background: b.unlocked ? `${C.primary}15` : C.card, border: `1px solid ${b.unlocked ? C.primary + '40' : C.border}`, borderRadius: 14, padding: '12px 8px', textAlign: 'center', opacity: b.unlocked ? 1 : 0.4 }}>
+          <button key={b.id} onClick={() => b.unlocked && shareAchievement(b, lang)} disabled={!b.unlocked} style={{ background: b.unlocked ? `${C.primary}15` : C.card, border: `1px solid ${b.unlocked ? C.primary + '40' : C.border}`, borderRadius: 14, padding: '12px 8px', textAlign: 'center', opacity: b.unlocked ? 1 : 0.4, cursor: b.unlocked ? 'pointer' : 'default' }}>
             <div style={{ fontSize: 24, marginBottom: 4, filter: b.unlocked ? 'none' : 'grayscale(1)' }}>{b.emoji}</div>
             <div style={{ fontSize: 10, fontWeight: 700, color: b.unlocked ? C.text : C.muted, lineHeight: 1.2 }}>{b.title}</div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
