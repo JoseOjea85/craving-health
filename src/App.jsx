@@ -590,7 +590,6 @@ function PageActividad({ workouts, onAdd, onColdShower, lang, sobrietyDays }) {
           )}
         </p>
       </div>
-      </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
         {[{ v: todayMin, l: lang === 'en' ? 'Today (min)' : 'Hoy (min)' }, { v: streak, l: lang === 'en' ? 'Streak' : 'Racha', icon: <Flame size={18} color={C.orange} /> }, { v: Math.round(totalMin / 60), l: lang === 'en' ? 'Total (h)' : 'Total (h)' }].map((s, i) => (
           <div key={i} style={{ background: i === 1 ? 'linear-gradient(135deg, rgba(251,146,60,0.15), rgba(239,68,68,0.05))' : C.card, border: `1px solid ${i === 1 ? 'rgba(251,146,60,0.25)' : C.border}`, borderRadius: 16, padding: '16px 8px', textAlign: 'center' }}>
