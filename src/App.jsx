@@ -877,8 +877,57 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
   );
 }
 
+// ─── DIARY ENTRY (editable) ───────────────────────────────────
+function DiaryEntry({ entry, MOODS, onDelete, onEdit, lang }) {
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState(entry.text || '');
+  const [editMood, setEditMood] = useState(entry.mood);
+
+  const saveEdit = async () => {
+    await onEdit(entry.id, { text: editText, mood: editMood });
+    setEditing(false);
+  };
+
+  const confirmDelete = () => {
+    if (window.confirm(lang === 'en' ? 'Delete this entry?' : '¿Borrar esta entrada?')) {
+      onDelete(entry.id);
+    }
+  };
+
+  if (editing) {
+    return (
+      <div style={{ background: C.card, border: `1px solid ${C.primary}`, borderRadius: 16, padding: '14px 16px' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 10, justifyContent: 'center' }}>
+          {MOODS.map(m => (
+            <button key={m.v} onClick={() => setEditMood(m.v)} style={{ fontSize: 22, padding: 6, background: editMood === m.v ? `${C.primary}30` : 'none', border: editMood === m.v ? `1px solid ${C.primary}` : '1px solid transparent', borderRadius: 10, cursor: 'pointer' }}>{m.emoji}</button>
+          ))}
+        </div>
+        <textarea value={editText} onChange={e => setEditText(e.target.value)} rows={3} style={{ width: '100%', padding: '10px', borderRadius: 10, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, outline: 'none', resize: 'none', fontFamily: 'inherit', marginBottom: 10 }} />
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={saveEdit} style={{ flex: 1, padding: '8px', borderRadius: 10, background: C.primary, border: 'none', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>{lang === 'en' ? 'Save' : 'Guardar'}</button>
+          <button onClick={() => setEditing(false)} style={{ flex: 1, padding: '8px', borderRadius: 10, background: C.border, border: 'none', color: C.text, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>{lang === 'en' ? 'Cancel' : 'Cancelar'}</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: entry.text ? 8 : 0 }}>
+        <span style={{ fontSize: 12, color: C.muted }}>{format(new Date(entry.date), 'dd/MM/yyyy')}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 22 }}>{MOODS.find(m => m.v === entry.mood)?.emoji || '😐'}</span>
+          <button onClick={() => setEditing(true)} style={{ background: 'none', border: 'none', color: C.muted, cursor: 'pointer', padding: 4, fontSize: 14 }}>✏️</button>
+          <button onClick={confirmDelete} style={{ background: 'none', border: 'none', color: C.muted, cursor: 'pointer', padding: 4, fontSize: 14 }}>🗑️</button>
+        </div>
+      </div>
+      {entry.text && <p style={{ fontSize: 13, color: C.text, lineHeight: 1.5 }}>{entry.text}</p>}
+    </div>
+  );
+}
+
 // ─── PAGE: DIARIO ─────────────────────────────────────────────
-function PageDiario({ diary, onAdd, setPage, lang, sobrietyDays }) {
+function PageDiario({ diary, onAdd, onDelete, onEdit, setPage, lang, sobrietyDays }) {
   const [mood, setMood] = useState(3);
   const [text, setText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -966,13 +1015,7 @@ function PageDiario({ diary, onAdd, setPage, lang, sobrietyDays }) {
           <div style={{ color: C.muted, fontSize: 11, letterSpacing: '0.2em', fontWeight: 600, marginBottom: 12 }}>{lang === 'en' ? 'PREVIOUS ENTRIES' : 'ENTRADAS ANTERIORES'}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {diary.slice(0, 20).map((d, i) => (
-              <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 16, padding: '14px 16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: d.text ? 8 : 0 }}>
-                  <span style={{ fontSize: 12, color: C.muted }}>{format(new Date(d.date), 'dd/MM/yyyy')}</span>
-                  <span style={{ fontSize: 22 }}>{MOODS.find(m => m.v === d.mood)?.emoji || '😐'}</span>
-                </div>
-                {d.text && <p style={{ fontSize: 13, color: C.text, lineHeight: 1.5 }}>{d.text}</p>}
-              </div>
+              <DiaryEntry key={d.id || i} entry={d} MOODS={MOODS} onDelete={onDelete} onEdit={onEdit} lang={lang} />
             ))}
           </div>
         </>
@@ -1216,6 +1259,16 @@ export default function App() {
     if (d) setDiary(prev => [d, ...prev]);
   };
 
+  const deleteDiary = async (id) => {
+    await supabase.from('diary').delete().eq('id', id);
+    setDiary(prev => prev.filter(d => d.id !== id));
+  };
+
+  const editDiary = async (id, newData) => {
+    const { data: d } = await supabase.from('diary').update(newData).eq('id', id).select().single();
+    if (d) setDiary(prev => prev.map(x => x.id === id ? d : x));
+  };
+
   const logout = async () => { await supabase.auth.signOut(); setUser(null); };
 
   if (loading) return (
@@ -1236,7 +1289,7 @@ export default function App() {
   const pages = {
     home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} lang={lang} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} sobrietyDays={sobrietyDays} />,
-    diario: <PageDiario diary={diary} onAdd={addDiary} setPage={setPage} lang={lang} sobrietyDays={sobrietyDays} />,
+    diario: <PageDiario diary={diary} onAdd={addDiary} onDelete={deleteDiary} onEdit={editDiary} setPage={setPage} lang={lang} sobrietyDays={sobrietyDays} />,
     meditacion: <PageMeditacion />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} lang={lang} />,
     perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} lang={lang} />,
