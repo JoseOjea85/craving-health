@@ -917,8 +917,8 @@ function DiaryEntry({ entry, MOODS, onDelete, onEdit, lang }) {
         <span style={{ fontSize: 12, color: C.muted }}>{format(new Date(entry.date), 'dd/MM/yyyy')}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 22 }}>{MOODS.find(m => m.v === entry.mood)?.emoji || '😐'}</span>
-          <button onClick={() => setEditing(true)} style={{ background: 'none', border: 'none', color: C.muted, cursor: 'pointer', padding: 4, fontSize: 14 }}>✏️</button>
-          <button onClick={confirmDelete} style={{ background: 'none', border: 'none', color: C.muted, cursor: 'pointer', padding: 4, fontSize: 14 }}>🗑️</button>
+          <button onClick={() => setEditing(true)} style={{ background: C.bg, border: `1px solid ${C.border}`, color: C.text, cursor: 'pointer', padding: '6px 10px', borderRadius: 8, fontSize: 14 }}>✏️</button>
+          <button onClick={confirmDelete} style={{ background: C.bg, border: `1px solid ${C.border}`, color: C.text, cursor: 'pointer', padding: '6px 10px', borderRadius: 8, fontSize: 14 }}>🗑️</button>
         </div>
       </div>
       {entry.text && <p style={{ fontSize: 13, color: C.text, lineHeight: 1.5 }}>{entry.text}</p>}
