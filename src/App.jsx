@@ -590,9 +590,6 @@ function PageActividad({ workouts, onAdd, onColdShower, lang, sobrietyDays }) {
           )}
         </p>
       </div>
-        <button onClick={() => setShowLog(true)} style={{display: 'none'}} style={{ width: 40, height: 40, borderRadius: '50%', background: `${C.primary}20`, border: `1px solid ${C.primary}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: C.primary }}>
-          <Plus size={20} />
-        </button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
         {[{ v: todayMin, l: lang === 'en' ? 'Today (min)' : 'Hoy (min)' }, { v: streak, l: lang === 'en' ? 'Streak' : 'Racha', icon: <Flame size={18} color={C.orange} /> }, { v: Math.round(totalMin / 60), l: lang === 'en' ? 'Total (h)' : 'Total (h)' }].map((s, i) => (
