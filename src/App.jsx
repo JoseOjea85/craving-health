@@ -231,9 +231,9 @@ function BreathingExercise({ onDone }) {
 // ─── PURPOSE INTRO (Tu porqué antes del SOS) ─────────────────
 function PurposeIntro({ purpose, onContinue, lang }) {
   const validPurposes = (purpose || []).filter(p => p && p.trim());
-  const [secondsLeft, setSecondsLeft] = React.useState(5);
+  const [secondsLeft, setSecondsLeft] = useState(5);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (secondsLeft <= 0) return;
     const t = setTimeout(() => setSecondsLeft(s => s - 1), 1000);
     return () => clearTimeout(t);
