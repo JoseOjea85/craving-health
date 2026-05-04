@@ -228,6 +228,40 @@ function BreathingExercise({ onDone }) {
   );
 }
 
+// ─── PURPOSE INTRO (Tu porqué antes del SOS) ─────────────────
+function PurposeIntro({ purpose, onContinue, lang }) {
+  const validPurposes = (purpose || []).filter(p => p && p.trim());
+  const [secondsLeft, setSecondsLeft] = React.useState(5);
+
+  React.useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const t = setTimeout(() => setSecondsLeft(s => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [secondsLeft]);
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'linear-gradient(180deg, #0a0a14 0%, #1a1a2e 100%)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, textAlign: 'center' }}>
+      <div style={{ fontSize: 11, color: '#8b8ba8', letterSpacing: '0.3em', fontWeight: 600, marginBottom: 32 }}>{lang === 'en' ? 'YOUR WHY' : 'TU PORQUÉ'}</div>
+      {validPurposes.length === 0 ? (
+        <p style={{ fontSize: 18, color: '#8b8ba8', maxWidth: 360, lineHeight: 1.6, fontStyle: 'italic', marginBottom: 40 }}>
+          {lang === 'en' ? 'You haven\'t written your reasons yet. Set them up in Profile.' : 'Aún no has escrito tus motivos. Configúralos en Yo.'}
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginBottom: 40, maxWidth: 480 }}>
+          {validPurposes.map((p, i) => (
+            <p key={i} style={{ fontSize: 22, fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#f0f0ff', lineHeight: 1.4, fontWeight: 300 }}>
+              "{p}"
+            </p>
+          ))}
+        </div>
+      )}
+      <button onClick={onContinue} disabled={secondsLeft > 0} style={{ padding: '14px 32px', borderRadius: 100, background: secondsLeft > 0 ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #f87171, #dc2626)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: 14, fontWeight: 600, letterSpacing: '0.05em', cursor: secondsLeft > 0 ? 'default' : 'pointer', opacity: secondsLeft > 0 ? 0.5 : 1, transition: 'all 0.3s' }}>
+        {secondsLeft > 0 ? (lang === 'en' ? `CONTINUE (${secondsLeft})` : `CONTINUAR (${secondsLeft})`) : (lang === 'en' ? 'CONTINUE TO SOS' : 'CONTINUAR AL SOS')}
+      </button>
+    </div>
+  );
+}
+
 // ─── SOS MODAL ────────────────────────────────────────────────
 function SOSModal({ onClose, anchors, blackPhotos, contacts, youtubePlaylist, setPage }) {
   const [phase, setPhase] = useState('sos');
@@ -766,7 +800,7 @@ function PageApoyo({ contacts, helpLines, lang }) {
 }
 
 // ─── PAGE: PERFIL ─────────────────────────────────────────────
-function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary, youtubePlaylist, lang }) {
+function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhotos, onSave, onLogout, sobrietyDays, diary, youtubePlaylist, lang, purpose, savePurpose }) {
   const [name, setName] = useState(profile?.name || '');
   const [sobrietyDate, setSobrietyDate] = useState(profile?.sobriety_date || '');
   const [myContacts, setMyContacts] = useState(contacts?.length > 0 ? contacts : [{ name: '', phone: '', role: '' }, { name: '', phone: '', role: '' }]);
@@ -859,6 +893,15 @@ function PagePerfil({ workouts, profile, contacts, helpLines, anchors, blackPhot
         <button onClick={() => setMyHelpLines([...myHelpLines, { nombre: '', numero: '', descripcion: '', emoji: '📞' }])} style={{ width: '100%', padding: '10px 0', borderRadius: 12, background: 'none', border: `1px dashed ${C.border}`, color: C.muted, fontSize: 13, cursor: 'pointer' }}>+ Añadir teléfono</button>
       </div>
 
+      <div style={{ background: C.card, borderRadius: 20, padding: 20, marginBottom: 16, border: `1px solid ${C.border}` }}>
+        <div style={{ marginBottom: 14 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 }}>{lang === 'en' ? '🎯 Your why' : '🎯 Tu porqué'}</h3>
+          <p style={{ fontSize: 12, color: C.muted }}>{lang === 'en' ? 'Three reasons that move you. They will appear when you press SOS.' : 'Tres motivos que te mueven. Aparecerán cuando pulses SOS.'}</p>
+        </div>
+        {[0,1,2].map(i => (
+          <input key={i} type="text" value={purpose?.[i] || ''} onChange={e => { const p = [...(purpose||['','',''])]; p[i] = e.target.value; savePurpose(p); }} placeholder={lang === 'en' ? `Reason ${i+1}` : `Motivo ${i+1}`} style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: 14, marginBottom: 10, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+        ))}
+      </div>
       <PhotoUploader photos={myAnchors} onAdd={p => setMyAnchors([...myAnchors, p])} onRemove={i => setMyAnchors(myAnchors.filter((_, idx) => idx !== i))} title="💙 Anclaje emocional" desc="Fotos de tus motivos para seguir" dark={false} />
       <label style={{ color: C.muted, fontSize: 11, letterSpacing: '0.15em', fontWeight: 600 }}>🎵 PLAYLIST ANTI-CRAVING</label>
       <div style={{ fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 8 }}>Pega aquí el enlace a tu playlist de YouTube</div>
@@ -1292,6 +1335,8 @@ export default function App() {
   const [youtubePlaylist, setYoutubePlaylist] = useState('')
   const [showAnimalTest, setShowAnimalTest] = useState(false)
   const [showAnimalModal, setShowAnimalModal] = useState(false)
+  const [purpose, setPurpose] = useState(['', '', ''])
+  const [showPurposeOnSOS, setShowPurposeOnSOS] = useState(false)
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'es');
 
   useEffect(() => {
@@ -1415,7 +1460,7 @@ export default function App() {
       supabase.from('help_lines').select('*').eq('user_id', uid),
       supabase.from('diary').select('*').eq('user_id', uid).order('date', { ascending: false }),
     ]);
-    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); setYoutubePlaylist(prof.youtube_playlist || ''); if (!prof.animal && page === 'home') setShowAnimalTest(true); }
+    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); setYoutubePlaylist(prof.youtube_playlist || ''); if (!prof.animal && page === 'home') setShowAnimalTest(true); try { setPurpose(JSON.parse(prof.purpose || '["","",""]')); } catch(e) { setPurpose(['','','']); } }
     if (w) setWorkouts(w);
     if (c) setContacts(c);
     if (h) setHelpLines(h);
@@ -1464,6 +1509,11 @@ export default function App() {
     if (d) setDiary(prev => prev.map(x => x.id === id ? d : x));
   };
 
+  const savePurpose = async (newPurpose) => {
+    setPurpose(newPurpose);
+    await supabase.from('profiles').update({ purpose: JSON.stringify(newPurpose) }).eq('id', user.id);
+  };
+
   const saveAnimal = async (animalKey) => {
     await supabase.from('profiles').update({ animal: animalKey }).eq('id', user.id);
     setProfile(prev => ({ ...prev, animal: animalKey }));
@@ -1488,12 +1538,12 @@ export default function App() {
   const sobrietyDays = profile?.sobriety_date ? differenceInDays(new Date(), new Date(profile.sobriety_date)) : 0;
 
   const pages = {
-    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} lang={lang} />,
+    home: <PageHome workouts={workouts} profile={profile} setPage={setPage} onSOS={() => setShowPurposeOnSOS(true)} sobrietyDays={sobrietyDays} diary={diary} onColdShower={addColdShower} youtubePlaylist={youtubePlaylist} lang={lang} />,
     actividad: <PageActividad workouts={workouts} onAdd={addWorkout} onColdShower={addColdShower} lang={lang} sobrietyDays={sobrietyDays} />,
     diario: <PageDiario diary={diary} onAdd={addDiary} onDelete={deleteDiary} onEdit={editDiary} setPage={setPage} lang={lang} sobrietyDays={sobrietyDays} />,
     meditacion: <PageMeditacion />,
     apoyo: <PageApoyo contacts={contacts} helpLines={helpLines} lang={lang} />,
-    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} lang={lang} />,
+    perfil: <PagePerfil workouts={workouts} profile={profile} contacts={contacts} helpLines={helpLines} anchors={anchors} blackPhotos={blackPhotos} onSave={saveProfile} onLogout={logout} sobrietyDays={sobrietyDays} diary={diary} youtubePlaylist={youtubePlaylist} lang={lang} purpose={purpose} savePurpose={savePurpose} />,
   };
 
   return (
@@ -1512,7 +1562,7 @@ export default function App() {
         <span>{lang === 'es' ? 'EN' : 'ES'}</span>
       </button>
       {page !== 'home' && (
-        <button onClick={() => setShowSOS(true)} aria-label="SOS" style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)', right: 'calc(env(safe-area-inset-right, 0px) + 16px)', zIndex: 60, width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #f87171, #dc2626)', border: '2px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 900, fontSize: 14, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 8px 24px rgba(248,113,113,0.5), 0 0 0 5px rgba(248,113,113,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'sosPulse 2.4s ease-in-out infinite' }}>
+        <button onClick={() => setShowPurposeOnSOS(true)} aria-label="SOS" style={{ position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)', right: 'calc(env(safe-area-inset-right, 0px) + 16px)', zIndex: 60, width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #f87171, #dc2626)', border: '2px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 900, fontSize: 14, letterSpacing: '0.05em', cursor: 'pointer', boxShadow: '0 8px 24px rgba(248,113,113,0.5), 0 0 0 5px rgba(248,113,113,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'sosPulse 2.4s ease-in-out infinite' }}>
           SOS
         </button>
       )}
@@ -1522,6 +1572,7 @@ export default function App() {
           <span style={{ fontSize: 18 }}>🚿</span>{toast}
         </div>
       )}
+      {showPurposeOnSOS && <PurposeIntro purpose={purpose} lang={lang} onContinue={() => { setShowPurposeOnSOS(false); setShowSOS(true); }} />}
       {showSOS && <SOSModal onClose={() => setShowSOS(false)} anchors={anchors} blackPhotos={blackPhotos} contacts={contacts} youtubePlaylist={youtubePlaylist} setPage={setPage} />}
       {pages[page]}
       <BottomNav page={page} setPage={setPage} lang={lang} setLang={setLang} />
