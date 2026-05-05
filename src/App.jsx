@@ -1178,146 +1178,6 @@ function Achievements({ sobrietyDays, workouts, diary, lang }) {
   );
 }
 
-// ─── ANIMAL INTERIOR ──────────────────────────────────────────
-const ANIMALS = {
-  lobo: { emoji: '🐺', name: 'Lobo', nameEn: 'Wolf', desc: 'Fuerza, lealtad, instinto', descEn: 'Strength, loyalty, instinct' },
-  buho: { emoji: '🦉', name: 'Búho', nameEn: 'Owl', desc: 'Sabiduría, reflexión', descEn: 'Wisdom, reflection' },
-  oso: { emoji: '🐻', name: 'Oso', nameEn: 'Bear', desc: 'Calma, resistencia', descEn: 'Calm, endurance' },
-  zorro: { emoji: '🦊', name: 'Zorro', nameEn: 'Fox', desc: 'Astucia, adaptabilidad', descEn: 'Cunning, adaptability' },
-  halcon: { emoji: '🦅', name: 'Halcón', nameEn: 'Hawk', desc: 'Visión, ambición', descEn: 'Vision, ambition' },
-};
-
-function AnimalTest({ onComplete, lang }) {
-  const [step, setStep] = useState(0);
-  const [scores, setScores] = useState({ lobo: 0, buho: 0, oso: 0, zorro: 0, halcon: 0 });
-
-  const questions = lang === 'en' ? [
-    { q: 'When things get hard, what do you do?', opts: [
-      { t: 'I charge head-on', a: 'lobo' },
-      { t: 'I observe and wait for the moment', a: 'buho' },
-      { t: 'I hold firm without moving', a: 'oso' },
-      { t: 'I look for a creative way out', a: 'zorro' },
-      { t: 'I take distance and see from above', a: 'halcon' },
-    ]},
-    { q: 'Your greatest strength is...', opts: [
-      { t: 'Loyalty', a: 'lobo' },
-      { t: 'Patience', a: 'buho' },
-      { t: 'Endurance', a: 'oso' },
-      { t: 'Intelligence', a: 'zorro' },
-      { t: 'Vision', a: 'halcon' },
-    ]},
-    { q: 'What recharges you?', opts: [
-      { t: 'Being with people who trust me', a: 'lobo' },
-      { t: 'Solitude and silence', a: 'buho' },
-      { t: 'Time at home, no rush', a: 'oso' },
-      { t: 'Learning new things', a: 'zorro' },
-      { t: 'Open spaces', a: 'halcon' },
-    ]},
-    { q: 'Your worst enemy is...', opts: [
-      { t: 'Betrayal', a: 'lobo' },
-      { t: 'Constant noise', a: 'buho' },
-      { t: 'Feeling trapped', a: 'oso' },
-      { t: 'Routine', a: 'zorro' },
-      { t: 'Limits', a: 'halcon' },
-    ]},
-    { q: 'When you win something, you celebrate...', opts: [
-      { t: 'In a pack, with my people', a: 'lobo' },
-      { t: 'In silence, with myself', a: 'buho' },
-      { t: 'Calmly, enjoying it', a: 'oso' },
-      { t: 'Looking for the next challenge', a: 'zorro' },
-      { t: 'Looking at what comes next', a: 'halcon' },
-    ]},
-  ] : [
-    { q: 'Cuando algo se pone difícil, ¿qué haces?', opts: [
-      { t: 'Embisto de frente', a: 'lobo' },
-      { t: 'Observo y espero el momento', a: 'buho' },
-      { t: 'Aguanto firme sin moverme', a: 'oso' },
-      { t: 'Busco una salida creativa', a: 'zorro' },
-      { t: 'Tomo distancia y veo desde arriba', a: 'halcon' },
-    ]},
-    { q: 'Tu mayor fortaleza es...', opts: [
-      { t: 'La lealtad', a: 'lobo' },
-      { t: 'La paciencia', a: 'buho' },
-      { t: 'La resistencia', a: 'oso' },
-      { t: 'La inteligencia', a: 'zorro' },
-      { t: 'La visión', a: 'halcon' },
-    ]},
-    { q: '¿Qué te recarga?', opts: [
-      { t: 'Estar con gente que confía en mí', a: 'lobo' },
-      { t: 'La soledad y el silencio', a: 'buho' },
-      { t: 'Tiempo en casa, sin prisas', a: 'oso' },
-      { t: 'Conocer cosas nuevas', a: 'zorro' },
-      { t: 'Los espacios abiertos', a: 'halcon' },
-    ]},
-    { q: 'Tu peor enemigo es...', opts: [
-      { t: 'La traición', a: 'lobo' },
-      { t: 'El ruido constante', a: 'buho' },
-      { t: 'Sentirme atrapado', a: 'oso' },
-      { t: 'La rutina', a: 'zorro' },
-      { t: 'Los límites', a: 'halcon' },
-    ]},
-    { q: 'Cuando ganas algo, lo celebras...', opts: [
-      { t: 'En manada, con los míos', a: 'lobo' },
-      { t: 'En silencio, conmigo mismo', a: 'buho' },
-      { t: 'Con calma, disfrutando', a: 'oso' },
-      { t: 'Buscando el siguiente reto', a: 'zorro' },
-      { t: 'Mirando lo que viene', a: 'halcon' },
-    ]},
-  ];
-
-  const choose = (animalKey) => {
-    const newScores = { ...scores, [animalKey]: scores[animalKey] + 1 };
-    setScores(newScores);
-    if (step < 4) {
-      setStep(step + 1);
-    } else {
-      const winner = Object.entries(newScores).sort((a, b) => b[1] - a[1])[0][0];
-      onComplete(winner);
-    }
-  };
-
-  return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: C.card, borderRadius: 24, padding: 28, maxWidth: 440, width: '100%', maxHeight: '90vh', overflow: 'auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <span style={{ fontSize: 11, color: C.muted, letterSpacing: '0.2em', fontWeight: 600 }}>{lang === 'en' ? 'YOUR INNER ANIMAL' : 'TU ANIMAL INTERIOR'}</span>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 12 }}>
-            {[0,1,2,3,4].map(i => (
-              <div key={i} style={{ width: 30, height: 4, borderRadius: 2, background: i <= step ? C.primary : C.border }} />
-            ))}
-          </div>
-        </div>
-        <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 20, textAlign: 'center', color: C.text }}>{questions[step].q}</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {questions[step].opts.map((opt, i) => (
-            <button key={i} onClick={() => choose(opt.a)} style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', color: C.text, fontSize: 14, textAlign: 'left', cursor: 'pointer' }}>{opt.t}</button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AnimalModal({ animalKey, sobrietyDays, onClose, lang }) {
-  const animal = ANIMALS[animalKey];
-  const stage = sobrietyDays < 30 ? (lang === 'en' ? 'Cub' : 'Cachorro') : sobrietyDays < 180 ? (lang === 'en' ? 'Young' : 'Joven') : sobrietyDays < 730 ? (lang === 'en' ? 'Adult' : 'Adulto') : (lang === 'en' ? 'Wise elder' : 'Anciano sabio');
-  return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: C.card, borderRadius: 24, padding: 28, maxWidth: 380, width: '100%', textAlign: 'center' }}>
-        <div style={{ fontSize: 100, marginBottom: 12 }}>{animal.emoji}</div>
-        <h2 style={{ fontSize: 22, fontWeight: 800, color: C.text, marginBottom: 4 }}>{lang === 'en' ? animal.nameEn : animal.name}</h2>
-        <p style={{ fontSize: 13, color: C.muted, marginBottom: 16 }}>{lang === 'en' ? animal.descEn : animal.desc}</p>
-        <div style={{ background: C.bg, borderRadius: 14, padding: '12px 16px', marginBottom: 16 }}>
-          <div style={{ fontSize: 11, color: C.muted, letterSpacing: '0.15em', marginBottom: 4 }}>{lang === 'en' ? 'STAGE' : 'ETAPA'}</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.primary }}>{stage}</div>
-          <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{sobrietyDays} {lang === 'en' ? 'days clean' : 'días limpio'}</div>
-        </div>
-        <button onClick={onClose} style={{ width: '100%', padding: '12px', borderRadius: 12, background: C.primary, border: 'none', color: '#fff', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>{lang === 'en' ? 'Close' : 'Cerrar'}</button>
-      </div>
-    </div>
-  );
-}
-
 // ─── APP ROOT ─────────────────────────────────────────────────
 export default function App() {
   const [user, setUser] = useState(null);
@@ -1333,8 +1193,6 @@ export default function App() {
   const [diary, setDiary] = useState([]);
   const [toast, setToast] = useState('');
   const [youtubePlaylist, setYoutubePlaylist] = useState('')
-  const [showAnimalTest, setShowAnimalTest] = useState(false)
-  const [showAnimalModal, setShowAnimalModal] = useState(false)
   const [purpose, setPurpose] = useState(['', '', ''])
   const [showPurposeOnSOS, setShowPurposeOnSOS] = useState(false)
   const [lang, setLang] = useState(localStorage.getItem('lang') || 'es');
@@ -1460,7 +1318,7 @@ export default function App() {
       supabase.from('help_lines').select('*').eq('user_id', uid),
       supabase.from('diary').select('*').eq('user_id', uid).order('date', { ascending: false }),
     ]);
-    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); setYoutubePlaylist(prof.youtube_playlist || ''); if (!prof.animal && page === 'home') setShowAnimalTest(true); try { setPurpose(JSON.parse(prof.purpose || '["","",""]')); } catch(e) { setPurpose(['','','']); } }
+    if (prof) { setProfile(prof); setAnchors(JSON.parse(prof.anchors || '[]')); setBlackPhotos(JSON.parse(prof.black_photos || '[]')); setYoutubePlaylist(prof.youtube_playlist || ''); try { setPurpose(JSON.parse(prof.purpose || '["","",""]')); } catch(e) { setPurpose(['','','']); } }
     if (w) setWorkouts(w);
     if (c) setContacts(c);
     if (h) setHelpLines(h);
@@ -1514,12 +1372,6 @@ export default function App() {
     await supabase.from('profiles').update({ purpose: JSON.stringify(newPurpose) }).eq('id', user.id);
   };
 
-  const saveAnimal = async (animalKey) => {
-    await supabase.from('profiles').update({ animal: animalKey }).eq('id', user.id);
-    setProfile(prev => ({ ...prev, animal: animalKey }));
-    setShowAnimalTest(false);
-  };
-
   const logout = async () => { await supabase.auth.signOut(); setUser(null); };
 
   if (loading) return (
@@ -1549,14 +1401,7 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } body { background: ${C.bg}; } input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); } input::placeholder { color: ${C.muted}; } @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } } @keyframes float1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px, 20px); } } @keyframes float2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-25px, -15px); } } @keyframes float3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-15px, 25px); } } @keyframes slideWaves { from { background-position: 0 0; } to { background-position: 60px 60px; } } @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 0.8; } } @keyframes sunPulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; } 50% { transform: translate(-50%,-50%) scale(1.2); opacity: 0.9; } } @keyframes rotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } } @keyframes leafFloat1 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(20px, 30px) rotate(20deg); } } @keyframes leafFloat2 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(-25px, 20px) rotate(-15deg); } } @keyframes leafFloat3 { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(15px, -20px) rotate(25deg); } } @keyframes shake { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } } @keyframes shake2 { 0%,100% { transform: rotate(8deg); } 50% { transform: rotate(-8deg); } }`}</style>
-      {showAnimalTest && <AnimalTest onComplete={saveAnimal} lang={lang} />}
-      {showAnimalModal && profile?.animal && <AnimalModal animalKey={profile.animal} sobrietyDays={sobrietyDays} onClose={() => setShowAnimalModal(false)} lang={lang} />}
-      {page === 'home' && profile?.animal && (
-        <button onClick={() => setShowAnimalModal(true)} aria-label="Animal" style={{ position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', right: 'calc(env(safe-area-inset-right, 0px) + 12px)', zIndex: 60, width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(124,92,252,0.25), rgba(34,211,238,0.25))', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
-          {ANIMALS[profile.animal]?.emoji}
-        </button>
-      )}
-      {/* SOS flotante - solo en páginas distintas a home */}
+            {/* SOS flotante - solo en páginas distintas a home */}
       <button onClick={() => { const nl = lang === 'es' ? 'en' : 'es'; setLang(nl); localStorage.setItem('lang', nl); }} style={{ position: 'fixed', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', left: 'calc(env(safe-area-inset-left, 0px) + 12px)', zIndex: 60, padding: '6px 12px', borderRadius: 20, background: 'rgba(20,20,30,0.85)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', gap: 6 }}>
         <span>{lang === 'es' ? '🇬🇧' : '🇪🇸'}</span>
         <span>{lang === 'es' ? 'EN' : 'ES'}</span>
